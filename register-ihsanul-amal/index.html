@@ -177,6 +177,27 @@
       --bs-btn-active-border-color: var(--turquoise-primary);
       --bs-btn-focus-shadow-rgb: 15, 107, 120;
     }
+    .start-registration-button {
+      min-height: 56px;
+      padding: 14px 30px;
+      font-size: 1.1rem;
+    }
+    .checkbox-option {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 44px;
+      margin: 0;
+      cursor: pointer;
+    }
+    .checkbox-option input[type="checkbox"] {
+      width: 1.15rem;
+      min-height: 1.15rem;
+      height: 1.15rem;
+      margin: 0;
+      padding: 0;
+      accent-color: var(--turquoise-primary);
+    }
     #result { margin-top: 16px; padding: 14px 16px; border-radius: 9px; line-height: 1.5; }
     #result:empty, #statusResult:empty { display: none; }
     #result[data-state="success"] { background: var(--turquoise-soft); color: var(--turquoise-primary); border-left: 4px solid var(--turquoise-light); }
@@ -232,9 +253,9 @@
           <div class="col-12">
             <div class="dashboard-card">
               <p class="eyebrow text-success">Selamat datang</p>
-              <h2 class="h4">Bergabung bersama keluarga Lembaga Pendidikan Ihsanul Amal</h2>
+              <h2 class="h4">Bergabung bersama keluarga besar Ihsanul Amal</h2>
               <p class="mb-3">Informasi penerimaan peserta didik baru di lembaga pendidikan. Siapkan data calon murid dan orang tua sebelum mengisi formulir.</p>
-              <button class="btn btn-success rounded-pill px-4 fw-bold" type="button" data-bs-toggle="tab" data-bs-target="#pendaftaran" aria-controls="pendaftaran">Mulai Pendaftaran <span aria-hidden="true">→</span></button>
+              <button class="btn btn-success btn-lg rounded-pill fw-bold start-registration-button" id="start-registration-button" type="button" aria-controls="pendaftaran">Mulai Pendaftaran <span aria-hidden="true">→</span></button>
             </div>
           </div>
           <div class="col-md-4">
@@ -284,14 +305,26 @@
               <option>SMP</option>
             </select>
           </div>
+          <div class="field wide" id="tpaOption" hidden>
+            <label class="checkbox-option" for="programTPA">
+              <input id="programTPA" name="programTambahan[]" type="checkbox" value="TPA" checked>
+              <span>Include TPA Ihsanul Amal</span>
+            </label>
+          </div>
+          <div class="field wide" id="boardingOption" hidden>
+            <label class="checkbox-option" for="programBoarding">
+              <input id="programBoarding" name="programTambahan[]" type="checkbox" value="Boarding" checked>
+              <span>Include Boarding SMPIT Ihsanul Amal</span>
+            </label>
+          </div>
+
           <div class="field">
             <label for="statusAsalSekolah">Status asal sekolah *</label>
             <select id="statusAsalSekolah" name="statusAsalSekolah" required>
               <option value="">-- Pilih status --</option>
-              <option>Negeri</option>
-              <option>Swasta</option>
-              <option>Belum sekolah</option>
-              <option>Lainnya</option>
+              <option>Internal Ihsanul Amal</option>
+              <option>TK Islam Terpadu Nurul Ilmi</option>
+              <option>Bukan dari Ihsanul Amal atau Nurul Ilmi</option>
             </select>
           </div>
           <div class="field">
@@ -464,13 +497,35 @@
   <script>
     const form = document.getElementById('registrationForm');
     const result = document.getElementById('result');
+    const unitSekolah = document.getElementById('unitSekolah');
+    const additionalProgramOptions = [
+      { container: document.getElementById('tpaOption'), checkbox: document.getElementById('programTPA'), units: ['KB', 'TK'] },
+      { container: document.getElementById('boardingOption'), checkbox: document.getElementById('programBoarding'), units: ['SMP'] }
+    ];
+
+    function syncAdditionalProgramOptions() {
+      additionalProgramOptions.forEach(({ container, checkbox, units }) => {
+        const isAvailable = units.includes(unitSekolah.value);
+        container.hidden = !isAvailable;
+        checkbox.checked = isAvailable;
+      });
+    }
+
+    unitSekolah.addEventListener('change', syncAdditionalProgramOptions);
+    syncAdditionalProgramOptions();
+
+    document.getElementById('start-registration-button').addEventListener('click', () => {
+      bootstrap.Tab.getOrCreateInstance(document.getElementById('pendaftaran-tab')).show();
+    });
 
     form.addEventListener('submit', (event) => {
       event.preventDefault();
       if (!form.reportValidity()) return;
 
+      const selectedPrograms = new FormData(form).getAll('programTambahan[]');
       result.dataset.state = 'info';
-      result.textContent = 'Formulir sudah siap, tetapi belum terhubung ke Google Sheets. Data belum dikirim atau disimpan.';
+      const programSummary = selectedPrograms.length ? ` Program tambahan: ${selectedPrograms.join(', ')}.` : '';
+      result.textContent = `Formulir sudah siap, tetapi belum terhubung ke Google Sheets. Data belum dikirim atau disimpan.${programSummary}`;
     });
 
     document.getElementById('statusForm').addEventListener('submit', (event) => {
