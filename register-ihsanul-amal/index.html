@@ -525,6 +525,8 @@
     const apiFrame = document.getElementById('registrationApiFrame');
 
     const API_URL = 'https://script.google.com/macros/s/AKfycbzVmYCR7q4Co4YDzEkqbjx1xnbgiN7pku1TS1pK5stB2JQkDthyyPBNiUjrBmwkhoGDIw/exec';
+    const REQUEST_TIMEOUT_MS = 120000;
+    const FRAME_RESPONSE_TIMEOUT_MS = 30000;
     const unitSekolah = document.getElementById('unitSekolah');
     let submissionId = null;
     const additionalProgramOptions = [
@@ -555,21 +557,39 @@
 
     function submitToAppsScript(payload) {
       return new Promise((resolve, reject) => {
-        const timeoutId = window.setTimeout(() => {
+        let responseTimeoutId;
+        const requestTimeoutId = window.setTimeout(() => {
+          window.clearTimeout(responseTimeoutId);
           window.removeEventListener('message', handleResponse);
-          reject(new Error('Waktu tunggu habis. Periksa deployment Apps Script sebelum mencoba lagi.'));
-        }, 45000);
+          apiFrame.removeEventListener('load', handleFrameLoad);
+          reject(new Error('Tidak ada respons dari Apps Script setelah 2 menit. Periksa koneksi internet, izin akses deployment, dan apakah versi terbaru Code.gs sudah di-deploy.'));
+        }, REQUEST_TIMEOUT_MS);
+
+        function cleanup() {
+          window.clearTimeout(requestTimeoutId);
+          window.clearTimeout(responseTimeoutId);
+          window.removeEventListener('message', handleResponse);
+          apiFrame.removeEventListener('load', handleFrameLoad);
+        }
 
         function handleResponse(messageEvent) {
           if (messageEvent.source !== apiFrame.contentWindow) return;
           if (messageEvent.data?.type !== 'ppdb-registration-response') return;
 
-          window.clearTimeout(timeoutId);
-          window.removeEventListener('message', handleResponse);
+          cleanup();
           resolve(messageEvent.data.payload);
         }
 
+        function handleFrameLoad() {
+          window.clearTimeout(responseTimeoutId);
+          responseTimeoutId = window.setTimeout(() => {
+            cleanup();
+            reject(new Error('Apps Script memuat halaman tetapi tidak mengirim respons pendaftaran. Pastikan Code.gs terbaru sudah di-deploy sebagai Web App dan aksesnya mengizinkan pengguna mengirim formulir.'));
+          }, FRAME_RESPONSE_TIMEOUT_MS);
+        }
+
         window.addEventListener('message', handleResponse);
+        apiFrame.addEventListener('load', handleFrameLoad);
 
         const requestForm = document.createElement('form');
         requestForm.method = 'POST';
@@ -608,18 +628,21 @@
 
       try {
         const response = await submitToAppsScript(payload);
-        if (response?.result !== 'success' || !response.noRegistrasi) {
-          throw new Error(response?.error || 'Backend tidak mengembalikan nomor registrasi.');
+        if (response?.result !== 'success') {
+          throw new Error(response?.error || 'Apps Script menolak pendaftaran tanpa memberikan alasan.');
+        }
+        if (!response.noRegistrasi || !response.nama || !response.jenjang) {
+          throw new Error('Apps Script menyimpan pendaftaran tetapi respons sukses tidak lengkap. Perbarui deployment Code.gs ke versi terbaru.');
         }
 
         result.dataset.state = 'success';
-        result.textContent = `Pendaftaran berhasil!\nNomor registrasi: ${response.noRegistrasi}\nJSON: ${JSON.stringify(response)}`;
+        result.textContent = `Pendaftaran berhasil!\nNama: ${response.nama}\nJenjang: ${response.jenjang}\nNomor pendaftaran: ${response.noRegistrasi}`;
         submissionId = null;
         form.reset();
         syncAdditionalProgramOptions();
       } catch (error) {
         result.dataset.state = 'error';
-        result.textContent = `Pendaftaran belum berhasil dipastikan: ${error.message} Jika Anda mencoba lagi, permintaan ini akan menggunakan ID yang sama untuk mencegah data ganda.`;
+        result.textContent = `Pendaftaran gagal: ${error.message} Jika Anda mencoba lagi setelah koneksi atau deployment diperbaiki, sistem menggunakan ID permintaan yang sama untuk mencegah data ganda.`;
       } finally {
         submitButton.disabled = false;
       }

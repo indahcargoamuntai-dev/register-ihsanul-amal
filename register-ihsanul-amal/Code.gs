@@ -28,32 +28,45 @@ var HEADERS = [
 
 function doPost(e) {
   var lock = LockService.getScriptLock();
+  var stage = 'memeriksa data formulir';
 
   try {
     var data = e && e.parameter ? e.parameter : {};
     validateRegistration_(data);
-    lock.waitLock(10000);
+    stage = 'mengunci proses pendaftaran';
+    if (!lock.tryLock(10000)) {
+      throw new Error('Server sedang memproses pendaftaran lain. Tunggu sebentar lalu coba lagi.');
+    }
 
+    stage = 'memeriksa pengiriman ulang';
     var cache = CacheService.getScriptCache();
     var cachedResponse = cache.get('ppdb:' + data.requestId);
     if (cachedResponse) {
-      return responsePage_(JSON.parse(cachedResponse));
+      var previousResponse = JSON.parse(cachedResponse);
+      previousResponse.nama = previousResponse.nama || data.namaLengkap;
+      previousResponse.jenjang = previousResponse.jenjang || data.jenjang;
+      return responsePage_(previousResponse);
     }
 
+    stage = 'membuka spreadsheet';
     var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
     if (!spreadsheet) {
       throw new Error('Spreadsheet aktif tidak ditemukan. Pastikan Apps Script terikat ke Google Sheets.');
     }
 
+    stage = 'memeriksa tab dan header spreadsheet';
     var sheet = spreadsheet.getActiveSheet();
     ensureHeaders_(sheet);
 
     var noRegistrasi = generateRegistrationNumber_(sheet, data.jenjang);
     var response = {
       result: 'success',
+      nama: data.namaLengkap,
+      jenjang: data.jenjang,
       noRegistrasi: noRegistrasi
     };
 
+    stage = 'menyimpan data pendaftaran ke spreadsheet';
     sheet.appendRow([
       new Date(),
       noRegistrasi,
@@ -82,12 +95,14 @@ function doPost(e) {
       data.penghasilanOrtu
     ].map(safeCellValue_));
 
+    stage = 'menyimpan tanda pengiriman ulang';
     cache.put('ppdb:' + data.requestId, JSON.stringify(response), 21600);
     return responsePage_(response);
   } catch (error) {
     return responsePage_({
       result: 'error',
-      error: error && error.message ? error.message : String(error)
+      code: error && error.code ? error.code : 'REGISTRATION_FAILED',
+      error: 'Gagal ' + stage + ': ' + (error && error.message ? error.message : String(error))
     });
   } finally {
     if (lock.hasLock()) {
@@ -98,7 +113,7 @@ function doPost(e) {
 
 function validateRegistration_(data) {
   if (!data.requestId || !/^[a-zA-Z0-9-]{8,100}$/.test(data.requestId)) {
-    throw new Error('ID permintaan tidak valid. Muat ulang formulir dan coba lagi.');
+    throw registrationError_('INVALID_REQUEST_ID', 'ID permintaan tidak valid. Muat ulang halaman lalu coba lagi.');
   }
 
   var requiredFields = [
@@ -111,12 +126,12 @@ function validateRegistration_(data) {
 
   requiredFields.forEach(function (field) {
     if (!data[field] || !String(data[field]).trim()) {
-      throw new Error('Field wajib belum diisi: ' + field);
+      throw registrationError_('MISSING_FIELD', 'Field wajib belum diisi: ' + field);
     }
   });
 
   if (['KB', 'TK', 'SD', 'SMP'].indexOf(data.jenjang) === -1) {
-    throw new Error('Jenjang sekolah tidak valid.');
+    throw registrationError_('INVALID_SCHOOL_LEVEL', 'Jenjang sekolah tidak valid. Pilih KB, TK, SD, atau SMP.');
   }
 
   var allowedPrograms = {
@@ -126,25 +141,31 @@ function validateRegistration_(data) {
     SMP: ['', 'Boarding']
   };
   if (allowedPrograms[data.jenjang].indexOf(data.programTambahan || '') === -1) {
-    throw new Error('Program tambahan tidak sesuai dengan jenjang sekolah.');
+    throw registrationError_('INVALID_PROGRAM', 'Program tambahan tidak sesuai dengan jenjang sekolah yang dipilih.');
   }
 
   if (!/^[0-9]{10}$/.test(data.nisn)) {
-    throw new Error('NISN harus terdiri dari 10 digit angka.');
+    throw registrationError_('INVALID_NISN', 'NISN harus terdiri dari 10 digit angka.');
   }
   if (!/^[0-9]{16}$/.test(data.nik)) {
-    throw new Error('NIK harus terdiri dari 16 digit angka.');
+    throw registrationError_('INVALID_NIK', 'NIK harus terdiri dari 16 digit angka.');
   }
 
   ['nomorKK', 'nikAyah', 'nikIbu'].forEach(function (field) {
     if (data[field] && !/^[0-9]{16}$/.test(data[field])) {
-      throw new Error(field + ' harus kosong atau terdiri dari 16 digit angka.');
+      throw registrationError_('INVALID_ID_NUMBER', field + ' harus kosong atau terdiri dari 16 digit angka.');
     }
   });
 
   if (!/^\d{4}-\d{2}-\d{2}$/.test(data.tanggalLahir)) {
-    throw new Error('Format tanggal lahir tidak valid.');
+    throw registrationError_('INVALID_BIRTH_DATE', 'Format tanggal lahir tidak valid.');
   }
+}
+
+function registrationError_(code, message) {
+  var error = new Error(message);
+  error.code = code;
+  return error;
 }
 
 function ensureHeaders_(sheet) {
@@ -167,8 +188,27 @@ function ensureHeaders_(sheet) {
     return String(currentHeaders[index]).trim() === header;
   });
   if (!matches) {
-    throw new Error('Header sheet tidak cocok. Gunakan 25 header sesuai urutan pada file Code.gs.');
+    var mismatchIndex = HEADERS.findIndex(function (header, index) {
+      return String(currentHeaders[index]).trim() !== header;
+    });
+    throw new Error(
+      'Header kolom ' + (mismatchIndex + 1) + ' (' + columnName_(mismatchIndex + 1) +
+      ') pada tab "' + sheet.getName() + '" tidak cocok. Seharusnya "' +
+      HEADERS[mismatchIndex] + '", tetapi ditemukan "' +
+      String(currentHeaders[mismatchIndex]).trim() +
+      '". Pastikan 25 header berada di baris pertama dan urutannya sesuai.'
+    );
   }
+}
+
+function columnName_(columnNumber) {
+  var name = '';
+  while (columnNumber > 0) {
+    var remainder = (columnNumber - 1) % 26;
+    name = String.fromCharCode(65 + remainder) + name;
+    columnNumber = Math.floor((columnNumber - 1) / 26);
+  }
+  return name;
 }
 
 function generateRegistrationNumber_(sheet, jenjang) {
