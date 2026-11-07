@@ -200,7 +200,7 @@
       padding: 0;
       accent-color: var(--turquoise-primary);
     }
-    #result { margin-top: 16px; padding: 14px 16px; border-radius: 9px; line-height: 1.5; }
+    #result { margin-top: 16px; padding: 14px 16px; border-radius: 9px; line-height: 1.5; white-space: pre-line; }
     #result:empty, #statusResult:empty { display: none; }
     #result[data-state="success"] { background: var(--turquoise-soft); color: var(--turquoise-primary); border-left: 4px solid var(--turquoise-light); }
     #result[data-state="error"] { background: #fff0ef; color: #8e2924; }
@@ -302,23 +302,23 @@
         <div class="fields">
           <div class="field wide">
             <label for="unitSekolah">Unit sekolah tujuan *</label>
-            <select id="unitSekolah" name="unitSekolah" required>
+            <select id="unitSekolah" name="jenjang" required>
               <option value="">-- Pilih unit sekolah --</option>
-              <option>KB</option>
-              <option>TK</option>
-              <option>SD</option>
-              <option>SMP</option>
+              <option value="KB">KB</option>
+              <option value="TK">TK</option>
+              <option value="SD">SD</option>
+              <option value="SMP">SMP</option>
             </select>
           </div>
           <div class="field wide" id="tpaOption" hidden>
             <label class="checkbox-option" for="programTPA">
-              <input id="programTPA" name="programTambahan[]" type="checkbox" value="TPA" checked>
+              <input id="programTPA" name="programTambahan" type="checkbox" value="TPA" checked>
               <span>Include TPA Ihsanul Amal</span>
             </label>
           </div>
           <div class="field wide" id="boardingOption" hidden>
             <label class="checkbox-option" for="programBoarding">
-              <input id="programBoarding" name="programTambahan[]" type="checkbox" value="Boarding" checked>
+              <input id="programBoarding" name="programTambahan" type="checkbox" value="Boarding" checked>
               <span>Include Boarding SMPIT Ihsanul Amal</span>
             </label>
           </div>
@@ -360,7 +360,7 @@
           </div>
           <div class="field">
             <label for="nomorKK">Nomor KK <span class="optional">(opsional)</span></label>
-            <input id="nomorKK" name="nomorKK" inputmode="numeric" pattern="[0-9]{0,16}" maxlength="16">
+            <input id="nomorKK" name="nomorKK" inputmode="numeric" pattern="[0-9]{16}" maxlength="16">
           </div>
           <div class="field">
             <label for="tempatLahir">Tempat lahir *</label>
@@ -406,7 +406,7 @@
           </div>
           <div class="field">
             <label for="nikAyah">NIK ayah / wali <span class="optional">(opsional)</span></label>
-            <input id="nikAyah" name="nikAyah" inputmode="numeric" pattern="[0-9]{0,16}" maxlength="16">
+            <input id="nikAyah" name="nikAyah" inputmode="numeric" pattern="[0-9]{16}" maxlength="16">
           </div>
           <div class="field">
             <label for="namaAyah">Nama ayah *</label>
@@ -442,7 +442,7 @@
           </div>
           <div class="field">
             <label for="nikIbu">NIK ibu <span class="optional">(opsional)</span></label>
-            <input id="nikIbu" name="nikIbu" inputmode="numeric" pattern="[0-9]{0,16}" maxlength="16">
+            <input id="nikIbu" name="nikIbu" inputmode="numeric" pattern="[0-9]{16}" maxlength="16">
           </div>
           <div class="field">
             <label for="namaIbu">Nama ibu *</label>
@@ -496,8 +496,9 @@
 
       <button class="action-button" type="submit" id="btnSubmit">Kirim Pendaftaran</button>
       <div id="result" role="status" aria-live="polite"></div>
-      <p class="privacy-note">Formulir ini belum mengirim atau menyimpan data. Setelah terhubung ke Google Sheets, pastikan akses spreadsheet dibatasi kepada petugas yang berwenang.</p>
+      <p class="privacy-note">Data pendaftaran dikirim ke Google Sheets. Pastikan akses spreadsheet dibatasi kepada petugas yang berwenang.</p>
     </form>
+        <iframe id="registrationApiFrame" name="registrationApiFrame" title="Pengiriman pendaftaran" hidden></iframe>
       </section>
 
       <section class="tab-pane fade" id="status" role="tabpanel" aria-labelledby="status-tab" tabindex="0">
@@ -520,7 +521,12 @@
   <script>
     const form = document.getElementById('registrationForm');
     const result = document.getElementById('result');
+    const submitButton = document.getElementById('btnSubmit');
+    const apiFrame = document.getElementById('registrationApiFrame');
+
+    const API_URL = 'https://script.google.com/macros/s/AKfycbzVmYCR7q4Co4YDzEkqbjx1xnbgiN7pku1TS1pK5stB2JQkDthyyPBNiUjrBmwkhoGDIw/exec';
     const unitSekolah = document.getElementById('unitSekolah');
+    let submissionId = null;
     const additionalProgramOptions = [
       { container: document.getElementById('tpaOption'), checkbox: document.getElementById('programTPA'), units: ['KB', 'TK'] },
       { container: document.getElementById('boardingOption'), checkbox: document.getElementById('programBoarding'), units: ['SMP'] }
@@ -541,14 +547,82 @@
       bootstrap.Tab.getOrCreateInstance(document.getElementById('pendaftaran-tab')).show();
     });
 
-    form.addEventListener('submit', (event) => {
+    function createSubmissionId() {
+      return window.crypto && typeof window.crypto.randomUUID === 'function'
+        ? window.crypto.randomUUID()
+        : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    }
+
+    function submitToAppsScript(payload) {
+      return new Promise((resolve, reject) => {
+        const timeoutId = window.setTimeout(() => {
+          window.removeEventListener('message', handleResponse);
+          reject(new Error('Waktu tunggu habis. Periksa deployment Apps Script sebelum mencoba lagi.'));
+        }, 45000);
+
+        function handleResponse(messageEvent) {
+          if (messageEvent.source !== apiFrame.contentWindow) return;
+          if (messageEvent.data?.type !== 'ppdb-registration-response') return;
+
+          window.clearTimeout(timeoutId);
+          window.removeEventListener('message', handleResponse);
+          resolve(messageEvent.data.payload);
+        }
+
+        window.addEventListener('message', handleResponse);
+
+        const requestForm = document.createElement('form');
+        requestForm.method = 'POST';
+        requestForm.action = API_URL;
+        requestForm.target = apiFrame.name;
+        requestForm.acceptCharset = 'UTF-8';
+        requestForm.hidden = true;
+
+        Object.entries(payload).forEach(([name, value]) => {
+          const input = document.createElement('input');
+          input.type = 'hidden';
+          input.name = name;
+          input.value = value;
+          requestForm.appendChild(input);
+        });
+
+        document.body.appendChild(requestForm);
+        requestForm.submit();
+        requestForm.remove();
+      });
+    }
+
+    form.addEventListener('submit', async (event) => {
       event.preventDefault();
       if (!form.reportValidity()) return;
 
-      const selectedPrograms = new FormData(form).getAll('programTambahan[]');
+      if (submitButton.disabled) return;
+
+      const payload = Object.fromEntries(new FormData(form).entries());
+      payload.programTambahan = form.querySelector('input[name="programTambahan"]:checked')?.value || '';
+      submissionId = submissionId || createSubmissionId();
+      payload.requestId = submissionId;
+      submitButton.disabled = true;
       result.dataset.state = 'info';
-      const programSummary = selectedPrograms.length ? ` Program tambahan: ${selectedPrograms.join(', ')}.` : '';
-      result.textContent = `Formulir sudah siap, tetapi belum terhubung ke Google Sheets. Data belum dikirim atau disimpan.${programSummary}`;
+      result.textContent = 'Mengirim pendaftaran...';
+
+      try {
+        const response = await submitToAppsScript(payload);
+        if (response?.result !== 'success' || !response.noRegistrasi) {
+          throw new Error(response?.error || 'Backend tidak mengembalikan nomor registrasi.');
+        }
+
+        result.dataset.state = 'success';
+        result.textContent = `Pendaftaran berhasil!\nNomor registrasi: ${response.noRegistrasi}\nJSON: ${JSON.stringify(response)}`;
+        submissionId = null;
+        form.reset();
+        syncAdditionalProgramOptions();
+      } catch (error) {
+        result.dataset.state = 'error';
+        result.textContent = `Pendaftaran belum berhasil dipastikan: ${error.message} Jika Anda mencoba lagi, permintaan ini akan menggunakan ID yang sama untuk mencegah data ganda.`;
+      } finally {
+        submitButton.disabled = false;
+      }
     });
 
     document.getElementById('statusForm').addEventListener('submit', (event) => {
