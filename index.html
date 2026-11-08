@@ -1,681 +1,1117 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="id">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#0F6B78">
-  <title>PPDB Yayasan Ihsanul Amal Alabio</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <style>
-    :root {
-      --turquoise-primary: #0f6b78;
-      --turquoise-light: #17899a;
-      --turquoise-soft: #e8f4f5;
-      --gold-primary: #f4b41a;
-      --gold-light: #f7c948;
-      --navy-primary: #173b57;
-      --blue-accent: #2b6f91;
-      --surface: #ffffff;
-      --surface-muted: #f8fafc;
-      --border: #dce5eb;
-      color-scheme: light;
-      font-family: Inter, "Segoe UI", Arial, sans-serif;
-      color: #26374a;
-      background: var(--surface-muted);
-      font-synthesis: none;
-    }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0F6B78" />
+    <title>PPDB Yayasan Ihsanul Amal Alabio</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --turquoise-primary: #0f6b78;
+        --turquoise-light: #17899a;
+        --turquoise-soft: #e8f4f5;
+        --gold-primary: #f4b41a;
+        --gold-light: #f7c948;
+        --navy-primary: #173b57;
+        --blue-accent: #2b6f91;
+        --surface: #ffffff;
+        --surface-muted: #f8fafc;
+        --border: #dce5eb;
+        color-scheme: light;
+        font-family: Inter, "Segoe UI", Arial, sans-serif;
+        color: #26374a;
+        background: var(--surface-muted);
+        font-synthesis: none;
+      }
 
-    * { box-sizing: border-box; }
-    body { margin: 0; padding: 32px 16px; background: var(--surface-muted); }
-    main { width: min(100%, 1090px); margin: 0 auto; }
-    .intro, .form-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      box-shadow: 0 12px 32px rgb(30 58 138 / 7%);
-    }
-    .intro {
-      padding: 28px 32px;
-      margin-bottom: 20px;
-      color: #fff;
-      background: linear-gradient(125deg, var(--turquoise-primary), var(--turquoise-light) 72%, #36a0aa);
-      border: 0;
-      border-bottom: 4px solid var(--gold-primary);
-      position: relative;
-      overflow: hidden;
-    }
-    .intro::after {
-      content: "";
-      position: absolute;
-      width: 250px;
-      height: 250px;
-      right: -72px;
-      top: -128px;
-      border: 1px solid rgb(247 201 72 / 40%);
-      border-radius: 50%;
-      box-shadow: 0 0 0 28px rgb(255 255 255 / 5%), 0 0 0 58px rgb(255 255 255 / 4%);
-      pointer-events: none;
-    }
-    .eyebrow {
-      margin: 0 0 8px;
-      color: var(--gold-light);
-      font-size: .78rem;
-      font-weight: 800;
-      letter-spacing: .12em;
-      text-transform: uppercase;
-    }
-    h1 { margin: 0; color: #fff; font-size: clamp(1.5rem, 4vw, 2rem); }
-    .intro p:last-child { margin: 10px 0 0; color: rgb(255 255 255 / 88%); line-height: 1.6; }
-    .nav-tabs {
-      gap: 8px;
-      border-bottom: 1px solid var(--border);
-      margin-bottom: 20px;
-    }
-    .nav-tabs .nav-link {
-      width: auto;
-      min-height: 46px;
-      padding: 10px 18px;
-      border: 1px solid transparent;
-      border-radius: 10px 10px 0 0;
-      background: transparent;
-      color: var(--navy-primary);
-      font: inherit;
-      font-weight: 700;
-    }
-    .nav-tabs .nav-link:hover { background: var(--turquoise-soft); color: var(--turquoise-primary); }
-    .nav-tabs .nav-link.active {
-      color: var(--turquoise-primary);
-      background: var(--surface);
-      border-color: var(--border) var(--border) var(--surface);
-      box-shadow: inset 0 3px 0 var(--gold-primary);
-    }
-    .tab-pane { min-height: 300px; }
-    .dashboard-card {
-      height: 100%;
-      padding: 22px;
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      background: var(--surface);
-      box-shadow: 0 8px 24px rgb(30 58 138 / 5%);
-    }
-    .col-12 > .dashboard-card { border-top: 3px solid var(--gold-primary); }
-    .dashboard-card .card-icon {
-      display: grid;
-      width: 44px;
-      height: 44px;
-      margin-bottom: 14px;
-      place-items: center;
-      border-radius: 12px;
-      background: var(--turquoise-soft);
-      color: var(--turquoise-primary);
-      font-size: 1.3rem;
-    }
-    .dashboard-card .eyebrow { color: var(--turquoise-primary); }
-    .dashboard-card h2 { color: var(--navy-primary); font-size: 1.05rem; font-weight: 750; }
-    .dashboard-card p, .dashboard-card li { color: #526273; line-height: 1.6; }
-    .section-heading { margin: 4px 0 16px; }
-    .section-heading h2 { margin: 0; color: var(--navy-primary); font-size: 1.35rem; font-weight: 750; }
-    .section-heading p { margin: 6px 0 0; color: #526273; }
-    .form-card { padding: 24px; }
-    fieldset {
-      min-width: 0;
-      margin: 0 0 20px;
-      padding: 0;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      overflow: hidden;
-    }
-    legend {
-      display: block;
-      width: 100%;
-      padding: 13px 16px;
-      background: var(--turquoise-soft);
-      color: var(--navy-primary);
-      border-bottom: 2px solid var(--gold-primary);
-      font-size: 1rem;
-      font-weight: 750;
-    }
-    .fields { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; padding: 18px; }
-    .address-family-fields { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-    .field { min-width: 0; }
-    .wide { grid-column: 1 / -1; }
-    .half { grid-column: span 2; }
-    .address-family-fields .contact-half { grid-column: span 2; }
-    label { display: block; margin-bottom: 6px; font-size: .9rem; font-weight: 650; }
-    .optional { color: #71818a; font-size: .82rem; font-weight: 400; }
-    input, select {
-      width: 100%;
-      min-height: 44px;
-      padding: 10px 12px;
-      border: 1px solid #cbd5e1;
-      border-radius: 8px;
-      background: var(--surface);
-      color: inherit;
-      font: inherit;
-    }
-    input:focus, select:focus { outline: 3px solid rgb(43 108 176 / 18%); border-color: var(--blue-accent); }
-    input::placeholder { color: #8a989f; }
-    .hint { margin: 5px 0 0; color: #71818a; font-size: .78rem; }
-    .action-button {
-      width: 100%;
-      min-height: 50px;
-      padding: 12px 18px;
-      border: 0;
-      border-radius: 10px;
-      background: var(--turquoise-primary);
-      color: #fff;
-      font: inherit;
-      font-weight: 750;
-      cursor: pointer;
-    }
-    .action-button:hover { background: var(--turquoise-light); }
-    .text-success { color: var(--turquoise-primary) !important; }
-    .btn-success {
-      --bs-btn-bg: var(--turquoise-primary);
-      --bs-btn-border-color: var(--turquoise-primary);
-      --bs-btn-hover-bg: var(--turquoise-light);
-      --bs-btn-hover-border-color: var(--turquoise-light);
-      --bs-btn-active-bg: var(--turquoise-primary);
-      --bs-btn-active-border-color: var(--turquoise-primary);
-      --bs-btn-focus-shadow-rgb: 15, 107, 120;
-    }
-    .start-registration-button {
-      min-height: 56px;
-      padding: 14px 30px;
-      font-size: 1.1rem;
-    }
-    .checkbox-option {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      min-height: 44px;
-      margin: 0;
-      cursor: pointer;
-    }
-    .checkbox-option input[type="checkbox"] {
-      width: 1.15rem;
-      min-height: 1.15rem;
-      height: 1.15rem;
-      margin: 0;
-      padding: 0;
-      accent-color: var(--turquoise-primary);
-    }
-    #result { margin-top: 16px; padding: 14px 16px; border-radius: 9px; line-height: 1.5; white-space: pre-line; }
-    #result:empty, #statusResult:empty { display: none; }
-    #result[data-state="success"] { background: var(--turquoise-soft); color: var(--turquoise-primary); border-left: 4px solid var(--turquoise-light); }
-    #result[data-state="error"] { background: #fff0ef; color: #8e2924; }
-    #result[data-state="info"], #statusResult[data-state="info"] {
-      margin-top: 16px;
-      padding: 14px 16px;
-      border-radius: 9px;
-      background: #eff6ff;
-      color: var(--navy-primary);
-      border-left: 4px solid var(--blue-accent);
-      line-height: 1.5;
-    }
-    .privacy-note { margin: 16px 0 0; color: #64748b; font-size: .8rem; line-height: 1.5; }
-    .status-card { max-width: 720px; margin: 0 auto; }
-    @media (max-width: 650px) {
-      body { padding: 16px 10px; }
-      .intro, .form-card { padding: 18px; }
-      .nav-tabs { gap: 2px; }
-      .nav-tabs .nav-link { flex: 1; padding: 9px 5px; font-size: .85rem; }
-      .fields { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; padding: 14px; }
-      .address-family-fields { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .half { grid-column: 1 / -1; }
-      .address-family-fields .contact-half { grid-column: span 1; }
-    }
-    @media (max-width: 420px) {
-      .fields { grid-template-columns: 1fr; }
-      .address-family-fields { grid-template-columns: 1fr; }
-      .wide, .half { grid-column: auto; }
-    }
-  </style>
-</head>
-<body>
-  <main>
-    <header class="intro">
-      <p class="eyebrow">Yayasan Ihsanul Amal Alabio</p>
-      <h1>Penerimaan Peserta Didik Baru</h1>
-      <p>Portal informasi dan pendaftaran siswa  baru. Silakan pelajari informasi, lengkapi formulir, atau cek status pendaftaran Anda.</p>
-    </header>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        padding: 32px 16px;
+        background: var(--surface-muted);
+      }
+      main {
+        width: min(100%, 1090px);
+        margin: 0 auto;
+      }
+      .intro,
+      .form-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        box-shadow: 0 12px 32px rgb(30 58 138 / 7%);
+      }
+      .intro {
+        padding: 28px 32px;
+        margin-bottom: 20px;
+        color: #fff;
+        background: linear-gradient(
+          125deg,
+          var(--turquoise-primary),
+          var(--turquoise-light) 72%,
+          #36a0aa
+        );
+        border: 0;
+        border-bottom: 4px solid var(--gold-primary);
+        position: relative;
+        overflow: hidden;
+      }
+      .intro::after {
+        content: "";
+        position: absolute;
+        width: 250px;
+        height: 250px;
+        right: -72px;
+        top: -128px;
+        border: 1px solid rgb(247 201 72 / 40%);
+        border-radius: 50%;
+        box-shadow:
+          0 0 0 28px rgb(255 255 255 / 5%),
+          0 0 0 58px rgb(255 255 255 / 4%);
+        pointer-events: none;
+      }
+      .eyebrow {
+        margin: 0 0 8px;
+        color: var(--gold-light);
+        font-size: 0.78rem;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+      h1 {
+        margin: 0;
+        color: #fff;
+        font-size: clamp(1.5rem, 4vw, 2rem);
+      }
+      .intro p:last-child {
+        margin: 10px 0 0;
+        color: rgb(255 255 255 / 88%);
+        line-height: 1.6;
+      }
+      .nav-tabs {
+        gap: 8px;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 20px;
+      }
+      .nav-tabs .nav-link {
+        width: auto;
+        min-height: 46px;
+        padding: 10px 18px;
+        border: 1px solid transparent;
+        border-radius: 10px 10px 0 0;
+        background: transparent;
+        color: var(--navy-primary);
+        font: inherit;
+        font-weight: 700;
+      }
+      .nav-tabs .nav-link:hover {
+        background: var(--turquoise-soft);
+        color: var(--turquoise-primary);
+      }
+      .nav-tabs .nav-link.active {
+        color: var(--turquoise-primary);
+        background: var(--surface);
+        border-color: var(--border) var(--border) var(--surface);
+        box-shadow: inset 0 3px 0 var(--gold-primary);
+      }
+      .tab-pane {
+        min-height: 300px;
+      }
+      .dashboard-card {
+        height: 100%;
+        padding: 22px;
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        background: var(--surface);
+        box-shadow: 0 8px 24px rgb(30 58 138 / 5%);
+      }
+      .col-12 > .dashboard-card {
+        border-top: 3px solid var(--gold-primary);
+      }
+      .dashboard-card .card-icon {
+        display: grid;
+        width: 44px;
+        height: 44px;
+        margin-bottom: 14px;
+        place-items: center;
+        border-radius: 12px;
+        background: var(--turquoise-soft);
+        color: var(--turquoise-primary);
+        font-size: 1.3rem;
+      }
+      .dashboard-card .eyebrow {
+        color: var(--turquoise-primary);
+      }
+      .dashboard-card h2 {
+        color: var(--navy-primary);
+        font-size: 1.05rem;
+        font-weight: 750;
+      }
+      .dashboard-card p,
+      .dashboard-card li {
+        color: #526273;
+        line-height: 1.6;
+      }
+      .section-heading {
+        margin: 4px 0 16px;
+      }
+      .section-heading h2 {
+        margin: 0;
+        color: var(--navy-primary);
+        font-size: 1.35rem;
+        font-weight: 750;
+      }
+      .section-heading p {
+        margin: 6px 0 0;
+        color: #526273;
+      }
+      .form-card {
+        padding: 24px;
+      }
+      fieldset {
+        min-width: 0;
+        margin: 0 0 20px;
+        padding: 0;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        overflow: hidden;
+      }
+      legend {
+        display: block;
+        width: 100%;
+        padding: 13px 16px;
+        background: var(--turquoise-soft);
+        color: var(--navy-primary);
+        border-bottom: 2px solid var(--gold-primary);
+        font-size: 1rem;
+        font-weight: 750;
+      }
+      .fields {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px;
+        padding: 18px;
+      }
+      .address-family-fields {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+      .field {
+        min-width: 0;
+      }
+      .wide {
+        grid-column: 1 / -1;
+      }
+      .half {
+        grid-column: span 2;
+      }
+      .address-family-fields .contact-half {
+        grid-column: span 2;
+      }
+      label {
+        display: block;
+        margin-bottom: 6px;
+        font-size: 0.9rem;
+        font-weight: 650;
+      }
+      .optional {
+        color: #71818a;
+        font-size: 0.82rem;
+        font-weight: 400;
+      }
+      input,
+      select {
+        width: 100%;
+        min-height: 44px;
+        padding: 10px 12px;
+        border: 1px solid #cbd5e1;
+        border-radius: 8px;
+        background: var(--surface);
+        color: inherit;
+        font: inherit;
+      }
+      input:focus,
+      select:focus {
+        outline: 3px solid rgb(43 108 176 / 18%);
+        border-color: var(--blue-accent);
+      }
+      input::placeholder {
+        color: #8a989f;
+      }
+      .hint {
+        margin: 5px 0 0;
+        color: #71818a;
+        font-size: 0.78rem;
+      }
+      .action-button {
+        width: 100%;
+        min-height: 50px;
+        padding: 12px 18px;
+        border: 0;
+        border-radius: 10px;
+        background: var(--turquoise-primary);
+        color: #fff;
+        font: inherit;
+        font-weight: 750;
+        cursor: pointer;
+      }
+      .action-button:hover {
+        background: var(--turquoise-light);
+      }
+      .text-success {
+        color: var(--turquoise-primary) !important;
+      }
+      .btn-success {
+        --bs-btn-bg: var(--turquoise-primary);
+        --bs-btn-border-color: var(--turquoise-primary);
+        --bs-btn-hover-bg: var(--turquoise-light);
+        --bs-btn-hover-border-color: var(--turquoise-light);
+        --bs-btn-active-bg: var(--turquoise-primary);
+        --bs-btn-active-border-color: var(--turquoise-primary);
+        --bs-btn-focus-shadow-rgb: 15, 107, 120;
+      }
+      .start-registration-button {
+        min-height: 56px;
+        padding: 14px 30px;
+        font-size: 1.1rem;
+      }
+      .checkbox-option {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        min-height: 44px;
+        margin: 0;
+        cursor: pointer;
+      }
+      .checkbox-option input[type="checkbox"] {
+        width: 1.15rem;
+        min-height: 1.15rem;
+        height: 1.15rem;
+        margin: 0;
+        padding: 0;
+        accent-color: var(--turquoise-primary);
+      }
+      #result {
+        margin-top: 16px;
+        padding: 14px 16px;
+        border-radius: 9px;
+        line-height: 1.5;
+        white-space: pre-line;
+      }
+      #result:empty,
+      #statusResult:empty {
+        display: none;
+      }
+      #result[data-state="success"] {
+        background: var(--turquoise-soft);
+        color: var(--turquoise-primary);
+        border-left: 4px solid var(--turquoise-light);
+      }
+      #result[data-state="error"] {
+        background: #fff0ef;
+        color: #8e2924;
+      }
+      #result[data-state="info"],
+      #statusResult[data-state="info"] {
+        margin-top: 16px;
+        padding: 14px 16px;
+        border-radius: 9px;
+        background: #eff6ff;
+        color: var(--navy-primary);
+        border-left: 4px solid var(--blue-accent);
+        line-height: 1.5;
+      }
+      .privacy-note {
+        margin: 16px 0 0;
+        color: #64748b;
+        font-size: 0.8rem;
+        line-height: 1.5;
+      }
+      .status-card {
+        max-width: 720px;
+        margin: 0 auto;
+      }
+      @media (max-width: 650px) {
+        body {
+          padding: 16px 10px;
+        }
+        .intro,
+        .form-card {
+          padding: 18px;
+        }
+        .nav-tabs {
+          gap: 2px;
+        }
+        .nav-tabs .nav-link {
+          flex: 1;
+          padding: 9px 5px;
+          font-size: 0.85rem;
+        }
+        .fields {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 14px;
+          padding: 14px;
+        }
+        .address-family-fields {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+        .half {
+          grid-column: 1 / -1;
+        }
+        .address-family-fields .contact-half {
+          grid-column: span 1;
+        }
+      }
+      @media (max-width: 420px) {
+        .fields {
+          grid-template-columns: 1fr;
+        }
+        .address-family-fields {
+          grid-template-columns: 1fr;
+        }
+        .wide,
+        .half {
+          grid-column: auto;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header class="intro">
+        <p class="eyebrow">Yayasan Ihsanul Amal Alabio</p>
+        <h1>Penerimaan Peserta Didik Baru</h1>
+        <p>
+          Portal informasi dan pendaftaran siswa baru. Silakan pelajari
+          informasi, lengkapi formulir, atau cek status pendaftaran Anda.
+        </p>
+      </header>
 
-    <ul class="nav nav-tabs" id="ppdbTabs" role="tablist">
-      <li class="nav-item" role="presentation">
-        <button class="nav-link active" id="beranda-tab" data-bs-toggle="tab" data-bs-target="#beranda" type="button" role="tab" aria-controls="beranda" aria-selected="true">⌂ Beranda</button>
-      </li>
-      <li class="nav-item" role="presentation">
-        <button class="nav-link" id="pendaftaran-tab" data-bs-toggle="tab" data-bs-target="#pendaftaran" type="button" role="tab" aria-controls="pendaftaran" aria-selected="false">✎ Pendaftaran</button>
-      </li>
-      <li class="nav-item" role="presentation">
-        <button class="nav-link" id="status-tab" data-bs-toggle="tab" data-bs-target="#status" type="button" role="tab" aria-controls="status" aria-selected="false">⌕ Cek Status</button>
-      </li>
-    </ul>
+      <ul class="nav nav-tabs" id="ppdbTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button
+            class="nav-link active"
+            id="beranda-tab"
+            data-bs-toggle="tab"
+            data-bs-target="#beranda"
+            type="button"
+            role="tab"
+            aria-controls="beranda"
+            aria-selected="true"
+          >
+            ⌂ Beranda
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button
+            class="nav-link"
+            id="pendaftaran-tab"
+            data-bs-toggle="tab"
+            data-bs-target="#pendaftaran"
+            type="button"
+            role="tab"
+            aria-controls="pendaftaran"
+            aria-selected="false"
+          >
+            ✎ Pendaftaran
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button
+            class="nav-link"
+            id="status-tab"
+            data-bs-toggle="tab"
+            data-bs-target="#status"
+            type="button"
+            role="tab"
+            aria-controls="status"
+            aria-selected="false"
+          >
+            ⌕ Cek Status
+          </button>
+        </li>
+      </ul>
 
-    <div class="tab-content" id="ppdbTabsContent">
-      <section class="tab-pane fade show active" id="beranda" role="tabpanel" aria-labelledby="beranda-tab" tabindex="0">
-        <div class="row g-3">
-          <div class="col-12">
-            <div class="dashboard-card">
-              <p class="eyebrow text-success">Selamat datang</p>
-              <h2 class="h4">Bergabung bersama keluarga besar Ihsanul Amal</h2>
-              <p class="mb-3">Informasi penerimaan peserta didik baru di lembaga pendidikan. Siapkan data calon siswa  dan orang tua sebelum mengisi formulir.</p>
-              <button class="btn btn-success btn-lg rounded-pill fw-bold start-registration-button" id="start-registration-button" type="button" aria-controls="pendaftaran">Mulai Pendaftaran <span aria-hidden="true">→</span></button>
+      <div class="tab-content" id="ppdbTabsContent">
+        <section
+          class="tab-pane fade show active"
+          id="beranda"
+          role="tabpanel"
+          aria-labelledby="beranda-tab"
+          tabindex="0"
+        >
+          <div class="row g-3">
+            <div class="col-12">
+              <div class="dashboard-card">
+                <p class="eyebrow text-success">Selamat datang</p>
+                <h2 class="h4">
+                  Bergabung bersama keluarga besar Ihsanul Amal
+                </h2>
+                <p class="mb-3">
+                  Informasi penerimaan peserta didik baru di lembaga pendidikan.
+                  Siapkan data calon siswa dan orang tua sebelum mengisi
+                  formulir.
+                </p>
+                <button
+                  class="btn btn-success btn-lg rounded-pill fw-bold start-registration-button"
+                  id="start-registration-button"
+                  type="button"
+                  aria-controls="pendaftaran"
+                >
+                  Mulai Pendaftaran <span aria-hidden="true">→</span>
+                </button>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <article class="dashboard-card">
+                <div class="card-icon" aria-hidden="true">ℹ</div>
+                <h2>Informasi PPDB</h2>
+                <p class="mb-0">
+                  Informasi jadwal, persyaratan, dan program pendidikan dapat
+                  diperbarui oleh pengelola sesuai ketentuan penerimaan terbaru.
+                </p>
+              </article>
+            </div>
+            <div class="col-md-4">
+              <article class="dashboard-card">
+                <div class="card-icon" aria-hidden="true">✓</div>
+                <h2>Persiapkan Dokumen</h2>
+                <p class="mb-0">
+                  Siapkan data NISN, NIK, kartu keluarga, data sekolah asal,
+                  serta informasi kontak orang tua atau wali.
+                </p>
+              </article>
+            </div>
+            <div class="col-md-4">
+              <article class="dashboard-card">
+                <div class="card-icon" aria-hidden="true">➜</div>
+                <h2>Alur Pendaftaran</h2>
+                <ol class="mb-0 ps-3">
+                  <li>Lengkapi formulir calon siswa .</li>
+                  <li>Simpan nomor pendaftaran setelah integrasi aktif.</li>
+                  <li>Gunakan menu Cek Status untuk melihat perkembangan.</li>
+                </ol>
+              </article>
             </div>
           </div>
-          <div class="col-md-4">
-            <article class="dashboard-card">
-              <div class="card-icon" aria-hidden="true">ℹ</div>
-              <h2>Informasi PPDB</h2>
-              <p class="mb-0">Informasi jadwal, persyaratan, dan program pendidikan dapat diperbarui oleh pengelola sesuai ketentuan penerimaan terbaru.</p>
-            </article>
-          </div>
-          <div class="col-md-4">
-            <article class="dashboard-card">
-              <div class="card-icon" aria-hidden="true">✓</div>
-              <h2>Persiapkan Dokumen</h2>
-              <p class="mb-0">Siapkan data NISN, NIK, kartu keluarga, data sekolah asal, serta informasi kontak orang tua atau wali.</p>
-            </article>
-          </div>
-          <div class="col-md-4">
-            <article class="dashboard-card">
-              <div class="card-icon" aria-hidden="true">➜</div>
-              <h2>Alur Pendaftaran</h2>
-              <ol class="mb-0 ps-3">
-                <li>Lengkapi formulir calon siswa .</li>
-                <li>Simpan nomor pendaftaran setelah integrasi aktif.</li>
-                <li>Gunakan menu Cek Status untuk melihat perkembangan.</li>
-              </ol>
-            </article>
-          </div>
-        </div>
-      </section>
+        </section>
 
-      <section class="tab-pane fade" id="pendaftaran" role="tabpanel" aria-labelledby="pendaftaran-tab" tabindex="0">
-        <div class="section-heading">
-          <h2>Formulir Pendaftaran siswa </h2>
-          <p>Isi data sesuai dokumen resmi. Kolom bertanda * wajib diisi; periksa kembali NIK dan nomor kontak sebelum mengirim.</p>
-        </div>
-    <form class="form-card" id="registrationForm">
-      <fieldset>
-        <legend>1. Pilihan Pendidikan</legend>
-        <div class="fields">
-          <div class="field wide">
-            <label for="unitSekolah">Unit sekolah tujuan *</label>
-            <select id="unitSekolah" name="jenjang" required>
-              <option value="">-- Pilih unit sekolah --</option>
-              <option value="KB">KB</option>
-              <option value="TK">TK</option>
-              <option value="SD">SD</option>
-              <option value="SMP">SMP</option>
-            </select>
+        <section
+          class="tab-pane fade"
+          id="pendaftaran"
+          role="tabpanel"
+          aria-labelledby="pendaftaran-tab"
+          tabindex="0"
+        >
+          <div class="section-heading">
+            <h2>Formulir Pendaftaran siswa</h2>
+            <p>
+              Isi data sesuai dokumen resmi. Kolom bertanda * wajib diisi;
+              periksa kembali NIK dan nomor kontak sebelum mengirim.
+            </p>
           </div>
-          <div class="field wide" id="tpaOption" hidden>
-            <label class="checkbox-option" for="programTPA">
-              <input id="programTPA" name="programTambahan" type="checkbox" value="TPA" checked>
-              <span>Include TPA Ihsanul Amal</span>
-            </label>
-          </div>
-          <div class="field wide" id="boardingOption" hidden>
-            <label class="checkbox-option" for="programBoarding">
-              <input id="programBoarding" name="programTambahan" type="checkbox" value="Boarding" checked>
-              <span>Include Boarding SMPIT Ihsanul Amal</span>
-            </label>
-          </div>
+          <form class="form-card" id="registrationForm">
+            <fieldset>
+              <legend>1. Pilihan Pendidikan</legend>
+              <div class="fields">
+                <div class="field wide">
+                  <label for="unitSekolah">Unit sekolah tujuan *</label>
+                  <select id="unitSekolah" name="jenjang" required>
+                    <option value="">-- Pilih unit sekolah --</option>
+                    <option value="KB">KB</option>
+                    <option value="TK">TK</option>
+                    <option value="SD">SD</option>
+                    <option value="SMP">SMP</option>
+                  </select>
+                </div>
+                <div class="field wide" id="tpaOption" hidden>
+                  <label class="checkbox-option" for="programTPA">
+                    <input
+                      id="programTPA"
+                      name="programTambahan"
+                      type="checkbox"
+                      value="TPA"
+                      checked
+                    />
+                    <span>Include TPA Ihsanul Amal</span>
+                  </label>
+                </div>
+                <div class="field wide" id="boardingOption" hidden>
+                  <label class="checkbox-option" for="programBoarding">
+                    <input
+                      id="programBoarding"
+                      name="programTambahan"
+                      type="checkbox"
+                      value="Boarding"
+                      checked
+                    />
+                    <span>Include Boarding SMPIT Ihsanul Amal</span>
+                  </label>
+                </div>
 
-          <div class="field">
-            <label for="statusAsalSekolah">Status asal sekolah *</label>
-            <select id="statusAsalSekolah" name="statusAsalSekolah" required>
-              <option value="">-- Pilih status --</option>
-              <option>Internal Ihsanul Amal</option>
-              <option>TK Islam Terpadu Nurul Ilmi</option>
-              <option>Bukan dari Ihsanul Amal atau Nurul Ilmi</option>
-            </select>
-          </div>
-          <div class="field">
-            <label for="namaAsalSekolah">Nama asal sekolah / madrasah *</label>
-            <input id="namaAsalSekolah" name="namaAsalSekolah" required maxlength="150">
-          </div>
-          <div class="field">
-            <label for="npsnAsal">NPSN / NSM asal <span class="optional">(opsional)</span></label>
-            <input id="npsnAsal" name="npsnAsal" inputmode="numeric" maxlength="20">
-          </div>
-        </div>
-      </fieldset>
+                <div class="field">
+                  <label for="statusAsalSekolah">Status asal sekolah *</label>
+                  <select
+                    id="statusAsalSekolah"
+                    name="statusAsalSekolah"
+                    required
+                  >
+                    <option value="">-- Pilih status --</option>
+                    <option>Internal Ihsanul Amal</option>
+                    <option>TK Islam Terpadu Nurul Ilmi</option>
+                    <option>Bukan dari Ihsanul Amal atau Nurul Ilmi</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="namaAsalSekolah"
+                    >Nama asal sekolah / madrasah *</label
+                  >
+                  <input
+                    id="namaAsalSekolah"
+                    name="namaAsalSekolah"
+                    required
+                    maxlength="150"
+                  />
+                </div>
+                <div class="field">
+                  <label for="npsnAsal"
+                    >NPSN / NSM asal
+                    <span class="optional">(opsional)</span></label
+                  >
+                  <input
+                    id="npsnAsal"
+                    name="npsnAsal"
+                    inputmode="numeric"
+                    maxlength="20"
+                  />
+                </div>
+              </div>
+            </fieldset>
 
-      <fieldset>
-        <legend>2. Data Pribadi Calon siswa </legend>
-        <div class="fields">
-          <div class="field wide">
-            <label for="namaLengkap">Nama lengkap (sesuai ijazah) *</label>
-            <input id="namaLengkap" name="namaLengkap" autocomplete="name" required maxlength="150">
-          </div>
-          <div class="field">
-            <label for="nisn">NISN (10 digit) *</label>
-            <input id="nisn" name="nisn" inputmode="numeric" pattern="[0-9]{10}" minlength="10" maxlength="10" required>
-          </div>
-          <div class="field">
-            <label for="nik">NIK (16 digit) *</label>
-            <input id="nik" name="nik" inputmode="numeric" pattern="[0-9]{16}" minlength="16" maxlength="16" required>
-          </div>
-          <div class="field">
-            <label for="nomorKK">Nomor KK <span class="optional">(opsional)</span></label>
-            <input id="nomorKK" name="nomorKK" inputmode="numeric" pattern="[0-9]{16}" maxlength="16">
-          </div>
-          <div class="field">
-            <label for="tempatLahir">Tempat lahir *</label>
-            <input id="tempatLahir" name="tempatLahir" required maxlength="100">
-          </div>
-          <div class="field">
-            <label for="tanggalLahir">Tanggal lahir *</label>
-            <input id="tanggalLahir" name="tanggalLahir" type="date" required>
-          </div>
-          <div class="field">
-            <label for="jenisKelamin">Jenis kelamin *</label>
-            <select id="jenisKelamin" name="jenisKelamin" required>
-              <option value="">-- Pilih --</option>
-              <option value="Laki-laki">Laki-laki</option>
-              <option value="Perempuan">Perempuan</option>
-            </select>
-          </div>
-        </div>
-      </fieldset>
+            <fieldset>
+              <legend>2. Data Pribadi Calon siswa</legend>
+              <div class="fields">
+                <div class="field wide">
+                  <label for="namaLengkap"
+                    >Nama lengkap (sesuai ijazah) *</label
+                  >
+                  <input
+                    id="namaLengkap"
+                    name="namaLengkap"
+                    autocomplete="name"
+                    required
+                    maxlength="150"
+                  />
+                </div>
+                <div class="field">
+                  <label for="nisn">NISN (10 digit) *</label>
+                  <input
+                    id="nisn"
+                    name="nisn"
+                    inputmode="numeric"
+                    pattern="[0-9]{10}"
+                    minlength="10"
+                    maxlength="10"
+                    required
+                  />
+                </div>
+                <div class="field">
+                  <label for="nik">NIK (16 digit) *</label>
+                  <input
+                    id="nik"
+                    name="nik"
+                    inputmode="numeric"
+                    pattern="[0-9]{16}"
+                    minlength="16"
+                    maxlength="16"
+                    required
+                  />
+                </div>
+                <div class="field">
+                  <label for="nomorKK"
+                    >Nomor KK <span class="optional">(opsional)</span></label
+                  >
+                  <input
+                    id="nomorKK"
+                    name="nomorKK"
+                    inputmode="numeric"
+                    pattern="[0-9]{16}"
+                    maxlength="16"
+                  />
+                </div>
+                <div class="field">
+                  <label for="tempatLahir">Tempat lahir *</label>
+                  <input
+                    id="tempatLahir"
+                    name="tempatLahir"
+                    required
+                    maxlength="100"
+                  />
+                </div>
+                <div class="field">
+                  <label for="tanggalLahir">Tanggal lahir *</label>
+                  <input
+                    id="tanggalLahir"
+                    name="tanggalLahir"
+                    type="date"
+                    required
+                  />
+                </div>
+                <div class="field">
+                  <label for="jenisKelamin">Jenis kelamin *</label>
+                  <select id="jenisKelamin" name="jenisKelamin" required>
+                    <option value="">-- Pilih --</option>
+                    <option value="Laki-laki">Laki-laki</option>
+                    <option value="Perempuan">Perempuan</option>
+                  </select>
+                </div>
+              </div>
+            </fieldset>
 
-      <fieldset>
-        <legend>3. Alamat Lengkap dan Data Orang Tua</legend>
-        <div class="fields address-family-fields">
-          <div class="field wide">
-            <label for="jalanRtRw">Jalan / RT / RW *</label>
-            <input id="jalanRtRw" name="jalanRtRw" required maxlength="250">
+            <fieldset>
+              <legend>3. Alamat Lengkap dan Data Orang Tua</legend>
+              <div class="fields address-family-fields">
+                <div class="field wide">
+                  <label for="jalanRtRw">Jalan / RT / RW *</label>
+                  <input
+                    id="jalanRtRw"
+                    name="jalanRtRw"
+                    required
+                    maxlength="250"
+                  />
+                </div>
+                <div class="field">
+                  <label for="provinsi">Provinsi *</label>
+                  <input
+                    id="provinsi"
+                    name="provinsi"
+                    required
+                    maxlength="100"
+                  />
+                </div>
+                <div class="field">
+                  <label for="kabupatenKota">Kabupaten / kota *</label>
+                  <input
+                    id="kabupatenKota"
+                    name="kabupatenKota"
+                    required
+                    maxlength="100"
+                  />
+                </div>
+                <div class="field">
+                  <label for="kecamatan">Kecamatan *</label>
+                  <input
+                    id="kecamatan"
+                    name="kecamatan"
+                    required
+                    maxlength="100"
+                  />
+                </div>
+                <div class="field">
+                  <label for="desaKelurahan">Desa / kelurahan *</label>
+                  <input
+                    id="desaKelurahan"
+                    name="desaKelurahan"
+                    required
+                    maxlength="100"
+                  />
+                </div>
+                <div class="field">
+                  <label for="nikAyah"
+                    >NIK ayah / wali
+                    <span class="optional">(opsional)</span></label
+                  >
+                  <input
+                    id="nikAyah"
+                    name="nikAyah"
+                    inputmode="numeric"
+                    pattern="[0-9]{16}"
+                    maxlength="16"
+                  />
+                </div>
+                <div class="field">
+                  <label for="namaAyah">Nama ayah *</label>
+                  <input
+                    id="namaAyah"
+                    name="namaAyah"
+                    required
+                    maxlength="150"
+                  />
+                </div>
+                <div class="field">
+                  <label for="pendidikanAyah">Pendidikan ayah *</label>
+                  <select id="pendidikanAyah" name="pendidikanAyah" required>
+                    <option value="">-- Pilih pendidikan --</option>
+                    <option>Tidak sekolah</option>
+                    <option>SD / MI</option>
+                    <option>SMP / MTs</option>
+                    <option>SMA / MA / SMK</option>
+                    <option>D1 / D2 / D3</option>
+                    <option>S1</option>
+                    <option>S2</option>
+                    <option>S3</option>
+                    <option>Lainnya</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="pekerjaanAyah">Pekerjaan ayah *</label>
+                  <select id="pekerjaanAyah" name="pekerjaanAyah" required>
+                    <option value="">-- Pilih --</option>
+                    <option value="PNS/TNI/Polri">PNS/TNI/Polri</option>
+                    <option value="Karyawan Swasta/BUMN">
+                      Karyawan Swasta/BUMN
+                    </option>
+                    <option value="Wiraswasta/Pedagang">
+                      Wiraswasta/Pedagang
+                    </option>
+                    <option value="Petani/Peternak">Petani/Peternak</option>
+                    <option value="Buruh/Supir">Buruh/Supir</option>
+                    <option value="Lainnya">Lainnya / Pensiunan</option>
+                    <option value="Tidak Bekerja">Tidak Bekerja</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="nikIbu"
+                    >NIK ibu <span class="optional">(opsional)</span></label
+                  >
+                  <input
+                    id="nikIbu"
+                    name="nikIbu"
+                    inputmode="numeric"
+                    pattern="[0-9]{16}"
+                    maxlength="16"
+                  />
+                </div>
+                <div class="field">
+                  <label for="namaIbu">Nama ibu *</label>
+                  <input id="namaIbu" name="namaIbu" required maxlength="150" />
+                </div>
+                <div class="field">
+                  <label for="pendidikanIbu">Pendidikan ibu *</label>
+                  <select id="pendidikanIbu" name="pendidikanIbu" required>
+                    <option value="">-- Pilih pendidikan --</option>
+                    <option>Tidak sekolah</option>
+                    <option>SD / MI</option>
+                    <option>SMP / MTs</option>
+                    <option>SMA / MA / SMK</option>
+                    <option>D1 / D2 / D3</option>
+                    <option>S1</option>
+                    <option>S2</option>
+                    <option>S3</option>
+                    <option>Lainnya</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="pekerjaanIbu">Pekerjaan ibu *</label>
+                  <select id="pekerjaanIbu" name="pekerjaanIbu" required>
+                    <option value="">-- Pilih --</option>
+                    <option value="PNS/TNI/Polri">PNS/TNI/Polri</option>
+                    <option value="Karyawan Swasta/BUMN">
+                      Karyawan Swasta/BUMN
+                    </option>
+                    <option value="Wiraswasta/Pedagang">
+                      Wiraswasta/Pedagang
+                    </option>
+                    <option value="Petani/Peternak">Petani/Peternak</option>
+                    <option value="Buruh/Supir">Buruh/Supir</option>
+                    <option value="Lainnya">Lainnya / Pensiunan</option>
+                    <option value="Tidak Bekerja">Tidak Bekerja</option>
+                  </select>
+                </div>
+                <div class="field contact-half">
+                  <label for="noHp">No. HP / WA aktif *</label>
+                  <input
+                    id="noHp"
+                    name="noHp"
+                    type="tel"
+                    inputmode="tel"
+                    autocomplete="tel"
+                    required
+                    maxlength="20"
+                  />
+                </div>
+                <div class="field contact-half">
+                  <label for="penghasilanOrtu"
+                    >Penghasilan orang tua / bulan *</label
+                  >
+                  <select id="penghasilanOrtu" name="penghasilanOrtu" required>
+                    <option value="">-- Pilih Rentang --</option>
+                    <option value="Kurang dari Rp 1 Juta">
+                      Kurang dari Rp 1.000.000
+                    </option>
+                    <option value="Rp 1 Juta - Rp 3 Juta">
+                      Rp 1.000.000 - Rp 3.000.000
+                    </option>
+                    <option value="Rp 3 Juta - Rp 5 Juta">
+                      Rp 3.000.000 - Rp 5.000.000
+                    </option>
+                    <option value="Rp 5 Juta - Rp 10 Juta">
+                      Rp 5.000.000 - Rp 10.000.000
+                    </option>
+                    <option value="Lebih dari Rp 10 Juta">
+                      Lebih dari Rp 10.000.000
+                    </option>
+                  </select>
+                </div>
+              </div>
+            </fieldset>
+
+            <button class="action-button" type="submit" id="btnSubmit">
+              Kirim Pendaftaran
+            </button>
+            <div id="result" role="status" aria-live="polite"></div>
+            <p class="privacy-note">
+              Data pendaftaran dikirim ke Google Sheets. Pastikan akses
+              spreadsheet dibatasi kepada petugas yang berwenang.
+            </p>
+          </form>
+          <iframe
+            id="registrationApiFrame"
+            name="registrationApiFrame"
+            title="Pengiriman pendaftaran"
+            hidden
+          ></iframe>
+        </section>
+
+        <section
+          class="tab-pane fade"
+          id="status"
+          role="tabpanel"
+          aria-labelledby="status-tab"
+          tabindex="0"
+        >
+          <div class="section-heading text-center">
+            <h2>Cek Status Pendaftaran</h2>
+            <p>
+              Masukkan nomor pendaftaran untuk melihat perkembangan proses
+              penerimaan.
+            </p>
           </div>
-          <div class="field">
-            <label for="provinsi">Provinsi *</label>
-            <input id="provinsi" name="provinsi" required maxlength="100">
-          </div>
-          <div class="field">
-            <label for="kabupatenKota">Kabupaten / kota *</label>
-            <input id="kabupatenKota" name="kabupatenKota" required maxlength="100">
-          </div>
-          <div class="field">
-            <label for="kecamatan">Kecamatan *</label>
-            <input id="kecamatan" name="kecamatan" required maxlength="100">
-          </div>
-          <div class="field">
-            <label for="desaKelurahan">Desa / kelurahan *</label>
-            <input id="desaKelurahan" name="desaKelurahan" required maxlength="100">
-          </div>
-          <div class="field">
-            <label for="nikAyah">NIK ayah / wali <span class="optional">(opsional)</span></label>
-            <input id="nikAyah" name="nikAyah" inputmode="numeric" pattern="[0-9]{16}" maxlength="16">
-          </div>
-          <div class="field">
-            <label for="namaAyah">Nama ayah *</label>
-            <input id="namaAyah" name="namaAyah" required maxlength="150">
-          </div>
-          <div class="field">
-            <label for="pendidikanAyah">Pendidikan ayah *</label>
-            <select id="pendidikanAyah" name="pendidikanAyah" required>
-              <option value="">-- Pilih pendidikan --</option>
-              <option>Tidak sekolah</option>
-              <option>SD / MI</option>
-              <option>SMP / MTs</option>
-              <option>SMA / MA / SMK</option>
-              <option>D1 / D2 / D3</option>
-              <option>S1</option>
-              <option>S2</option>
-              <option>S3</option>
-              <option>Lainnya</option>
-            </select>
-          </div>
-          <div class="field">
-            <label for="pekerjaanAyah">Pekerjaan ayah *</label>
-            <select id="pekerjaanAyah" name="pekerjaanAyah" required>
-              <option value="">-- Pilih --</option>
-              <option value="PNS/TNI/Polri">PNS/TNI/Polri</option>
-              <option value="Karyawan Swasta/BUMN">Karyawan Swasta/BUMN</option>
-              <option value="Wiraswasta/Pedagang">Wiraswasta/Pedagang</option>
-              <option value="Petani/Peternak">Petani/Peternak</option>
-              <option value="Buruh/Supir">Buruh/Supir</option>
-              <option value="Lainnya">Lainnya / Pensiunan</option>
-              <option value="Tidak Bekerja">Tidak Bekerja</option>
-            </select>
-          </div>
-          <div class="field">
-            <label for="nikIbu">NIK ibu <span class="optional">(opsional)</span></label>
-            <input id="nikIbu" name="nikIbu" inputmode="numeric" pattern="[0-9]{16}" maxlength="16">
-          </div>
-          <div class="field">
-            <label for="namaIbu">Nama ibu *</label>
-            <input id="namaIbu" name="namaIbu" required maxlength="150">
-          </div>
-          <div class="field">
-            <label for="pendidikanIbu">Pendidikan ibu *</label>
-            <select id="pendidikanIbu" name="pendidikanIbu" required>
-              <option value="">-- Pilih pendidikan --</option>
-              <option>Tidak sekolah</option>
-              <option>SD / MI</option>
-              <option>SMP / MTs</option>
-              <option>SMA / MA / SMK</option>
-              <option>D1 / D2 / D3</option>
-              <option>S1</option>
-              <option>S2</option>
-              <option>S3</option>
-              <option>Lainnya</option>
-            </select>
-          </div>
-          <div class="field">
-            <label for="pekerjaanIbu">Pekerjaan ibu *</label>
-            <select id="pekerjaanIbu" name="pekerjaanIbu" required>
-              <option value="">-- Pilih --</option>
-              <option value="PNS/TNI/Polri">PNS/TNI/Polri</option>
-              <option value="Karyawan Swasta/BUMN">Karyawan Swasta/BUMN</option>
-              <option value="Wiraswasta/Pedagang">Wiraswasta/Pedagang</option>
-              <option value="Petani/Peternak">Petani/Peternak</option>
-              <option value="Buruh/Supir">Buruh/Supir</option>
-              <option value="Lainnya">Lainnya / Pensiunan</option>
-              <option value="Tidak Bekerja">Tidak Bekerja</option>
-            </select>
-          </div>
-          <div class="field contact-half">
-            <label for="noHp">No. HP / WA aktif *</label>
-            <input id="noHp" name="noHp" type="tel" inputmode="tel" autocomplete="tel" required maxlength="20">
-          </div>
-          <div class="field contact-half">
-            <label for="penghasilanOrtu">Penghasilan orang tua / bulan *</label>
-            <select id="penghasilanOrtu" name="penghasilanOrtu" required>
-              <option value="">-- Pilih Rentang --</option>
-              <option value="Kurang dari Rp 1 Juta">Kurang dari Rp 1.000.000</option>
-              <option value="Rp 1 Juta - Rp 3 Juta">Rp 1.000.000 - Rp 3.000.000</option>
-              <option value="Rp 3 Juta - Rp 5 Juta">Rp 3.000.000 - Rp 5.000.000</option>
-              <option value="Rp 5 Juta - Rp 10 Juta">Rp 5.000.000 - Rp 10.000.000</option>
-              <option value="Lebih dari Rp 10 Juta">Lebih dari Rp 10.000.000</option>
-            </select>
-          </div>
-        </div>
-      </fieldset>
+          <form class="form-card status-card" id="statusForm">
+            <label for="registrationNumber">Nomor pendaftaran *</label>
+            <input
+              id="registrationNumber"
+              name="registrationNumber"
+              autocomplete="off"
+              placeholder="Contoh: PPDB-2027-0001"
+              required
+              maxlength="40"
+            />
+            <p class="hint">
+              Gunakan nomor yang tertera pada bukti pendaftaran.
+            </p>
+            <button class="action-button mt-3" type="submit">
+              Cek Status Pendaftaran
+            </button>
+            <div id="statusResult" role="status" aria-live="polite"></div>
+          </form>
+        </section>
+      </div>
+    </main>
 
-      <button class="action-button" type="submit" id="btnSubmit">Kirim Pendaftaran</button>
-      <div id="result" role="status" aria-live="polite"></div>
-      <p class="privacy-note">Data pendaftaran dikirim ke Google Sheets. Pastikan akses spreadsheet dibatasi kepada petugas yang berwenang.</p>
-    </form>
-        <iframe id="registrationApiFrame" name="registrationApiFrame" title="Pengiriman pendaftaran" hidden></iframe>
-      </section>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      const form = document.getElementById("registrationForm");
+      const result = document.getElementById("result");
+      const submitButton = document.getElementById("btnSubmit");
+      const apiFrame = document.getElementById("registrationApiFrame");
 
-      <section class="tab-pane fade" id="status" role="tabpanel" aria-labelledby="status-tab" tabindex="0">
-        <div class="section-heading text-center">
-          <h2>Cek Status Pendaftaran</h2>
-          <p>Masukkan nomor pendaftaran untuk melihat perkembangan proses penerimaan.</p>
-        </div>
-        <form class="form-card status-card" id="statusForm">
-          <label for="registrationNumber">Nomor pendaftaran *</label>
-          <input id="registrationNumber" name="registrationNumber" autocomplete="off" placeholder="Contoh: PPDB-2027-0001" required maxlength="40">
-          <p class="hint">Gunakan nomor yang tertera pada bukti pendaftaran.</p>
-          <button class="action-button mt-3" type="submit">Cek Status Pendaftaran</button>
-          <div id="statusResult" role="status" aria-live="polite"></div>
-        </form>
-      </section>
-    </div>
-  </main>
+      const API_URL =
+        "https://script.google.com/macros/s/AKfycbwk_Ov89JKl8SlEMJWxgqzybjhZIYP02-XMu4JU_fEr/dev";
+      const REQUEST_TIMEOUT_MS = 120000;
+      const FRAME_RESPONSE_TIMEOUT_MS = 30000;
+      const unitSekolah = document.getElementById("unitSekolah");
+      let submissionId = null;
+      const additionalProgramOptions = [
+        {
+          container: document.getElementById("tpaOption"),
+          checkbox: document.getElementById("programTPA"),
+          units: ["KB", "TK"],
+        },
+        {
+          container: document.getElementById("boardingOption"),
+          checkbox: document.getElementById("programBoarding"),
+          units: ["SMP"],
+        },
+      ];
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  <script>
-    const form = document.getElementById('registrationForm');
-    const result = document.getElementById('result');
-    const submitButton = document.getElementById('btnSubmit');
-    const apiFrame = document.getElementById('registrationApiFrame');
+      function syncAdditionalProgramOptions() {
+        additionalProgramOptions.forEach(({ container, checkbox, units }) => {
+          const isAvailable = units.includes(unitSekolah.value);
+          container.hidden = !isAvailable;
+          checkbox.checked = isAvailable;
+        });
+      }
 
-    const API_URL = 'https://script.google.com/macros/s/AKfycbzVmYCR7q4Co4YDzEkqbjx1xnbgiN7pku1TS1pK5stB2JQkDthyyPBNiUjrBmwkhoGDIw/exec';
-    const REQUEST_TIMEOUT_MS = 120000;
-    const FRAME_RESPONSE_TIMEOUT_MS = 30000;
-    const unitSekolah = document.getElementById('unitSekolah');
-    let submissionId = null;
-    const additionalProgramOptions = [
-      { container: document.getElementById('tpaOption'), checkbox: document.getElementById('programTPA'), units: ['KB', 'TK'] },
-      { container: document.getElementById('boardingOption'), checkbox: document.getElementById('programBoarding'), units: ['SMP'] }
-    ];
+      unitSekolah.addEventListener("change", syncAdditionalProgramOptions);
+      syncAdditionalProgramOptions();
 
-    function syncAdditionalProgramOptions() {
-      additionalProgramOptions.forEach(({ container, checkbox, units }) => {
-        const isAvailable = units.includes(unitSekolah.value);
-        container.hidden = !isAvailable;
-        checkbox.checked = isAvailable;
-      });
-    }
-
-    unitSekolah.addEventListener('change', syncAdditionalProgramOptions);
-    syncAdditionalProgramOptions();
-
-    document.getElementById('start-registration-button').addEventListener('click', () => {
-      bootstrap.Tab.getOrCreateInstance(document.getElementById('pendaftaran-tab')).show();
-    });
-
-    function createSubmissionId() {
-      return window.crypto && typeof window.crypto.randomUUID === 'function'
-        ? window.crypto.randomUUID()
-        : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
-    }
-
-    function submitViaIframe(payload) {
-      return new Promise((resolve, reject) => {
-        let responseTimeoutId;
-        const requestTimeoutId = window.setTimeout(() => {
-          window.clearTimeout(responseTimeoutId);
-          window.removeEventListener('message', handleResponse);
-          apiFrame.removeEventListener('load', handleFrameLoad);
-          reject(new Error('Tidak ada respons dari Apps Script setelah 2 menit. Periksa koneksi internet, izin akses deployment, dan apakah versi terbaru Code.gs sudah di-deploy.'));
-        }, REQUEST_TIMEOUT_MS);
-
-        function cleanup() {
-          window.clearTimeout(requestTimeoutId);
-          window.clearTimeout(responseTimeoutId);
-          window.removeEventListener('message', handleResponse);
-          apiFrame.removeEventListener('load', handleFrameLoad);
-        }
-
-        function handleResponse(messageEvent) {
-          if (messageEvent.data?.type !== 'ppdb-registration-response') return;
-          const responsePayload = messageEvent.data.payload;
-          if (responsePayload?.requestId && responsePayload.requestId !== payload.requestId) return;
-
-          cleanup();
-          resolve(responsePayload);
-        }
-
-        function handleFrameLoad() {
-          window.clearTimeout(responseTimeoutId);
-          responseTimeoutId = window.setTimeout(() => {
-            cleanup();
-            reject(new Error('Apps Script memuat halaman tetapi tidak mengirim respons pendaftaran. Pastikan Code.gs terbaru sudah di-deploy sebagai Web App dan aksesnya mengizinkan pengguna mengirim formulir.'));
-          }, FRAME_RESPONSE_TIMEOUT_MS);
-        }
-
-        window.addEventListener('message', handleResponse);
-        apiFrame.addEventListener('load', handleFrameLoad);
-
-        const requestForm = document.createElement('form');
-        requestForm.method = 'POST';
-        requestForm.action = API_URL;
-        requestForm.target = apiFrame.name;
-        requestForm.acceptCharset = 'UTF-8';
-        requestForm.hidden = true;
-
-        Object.entries(payload).forEach(([name, value]) => {
-          const input = document.createElement('input');
-          input.type = 'hidden';
-          input.name = name;
-          input.value = value;
-          requestForm.appendChild(input);
+      document
+        .getElementById("start-registration-button")
+        .addEventListener("click", () => {
+          bootstrap.Tab.getOrCreateInstance(
+            document.getElementById("pendaftaran-tab"),
+          ).show();
         });
 
-        document.body.appendChild(requestForm);
-        requestForm.submit();
-        requestForm.remove();
-      });
-    }
+      function createSubmissionId() {
+        return window.crypto && typeof window.crypto.randomUUID === "function"
+          ? window.crypto.randomUUID()
+          : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+      }
 
-    async function submitToAppsScript(payload) {
-      try {
-        const body = new URLSearchParams({ ...payload, responseMode: 'json' });
-        const res = await fetch(API_URL, {
-          method: 'POST',
-          body
-        });
-        if (res.ok) {
-          const data = await res.json();
-          if (data && typeof data === 'object' && data.result) {
-            return data;
+      function submitViaIframe(payload) {
+        return new Promise((resolve, reject) => {
+          let responseTimeoutId;
+          const requestTimeoutId = window.setTimeout(() => {
+            window.clearTimeout(responseTimeoutId);
+            window.removeEventListener("message", handleResponse);
+            apiFrame.removeEventListener("load", handleFrameLoad);
+            reject(
+              new Error(
+                "Tidak ada respons dari Apps Script setelah 2 menit. Periksa koneksi internet, izin akses deployment, dan apakah versi terbaru Code.gs sudah di-deploy.",
+              ),
+            );
+          }, REQUEST_TIMEOUT_MS);
+
+          function cleanup() {
+            window.clearTimeout(requestTimeoutId);
+            window.clearTimeout(responseTimeoutId);
+            window.removeEventListener("message", handleResponse);
+            apiFrame.removeEventListener("load", handleFrameLoad);
           }
-        }
-      } catch (_) {
-        // Fallback ke iframe postMessage jika fetch diblokir CORS (misal versi deployment lama)
+
+          function handleResponse(messageEvent) {
+            if (messageEvent.data?.type !== "ppdb-registration-response")
+              return;
+            const responsePayload = messageEvent.data.payload;
+            if (
+              responsePayload?.requestId &&
+              responsePayload.requestId !== payload.requestId
+            )
+              return;
+
+            cleanup();
+            resolve(responsePayload);
+          }
+
+          function handleFrameLoad() {
+            window.clearTimeout(responseTimeoutId);
+            responseTimeoutId = window.setTimeout(() => {
+              cleanup();
+              reject(
+                new Error(
+                  "Apps Script memuat halaman tetapi tidak mengirim respons pendaftaran. Pastikan Code.gs terbaru sudah di-deploy sebagai Web App dan aksesnya mengizinkan pengguna mengirim formulir.",
+                ),
+              );
+            }, FRAME_RESPONSE_TIMEOUT_MS);
+          }
+
+          window.addEventListener("message", handleResponse);
+          apiFrame.addEventListener("load", handleFrameLoad);
+
+          const requestForm = document.createElement("form");
+          requestForm.method = "POST";
+          requestForm.action = API_URL;
+          requestForm.target = apiFrame.name;
+          requestForm.acceptCharset = "UTF-8";
+          requestForm.hidden = true;
+
+          Object.entries({ ...payload, responseMode: "iframe" }).forEach(([name, value]) => {
+            const input = document.createElement("input");
+            input.type = "hidden";
+            input.name = name;
+            input.value = value;
+            requestForm.appendChild(input);
+          });
+
+          document.body.appendChild(requestForm);
+          requestForm.submit();
+          requestForm.remove();
+        });
       }
-      return submitViaIframe(payload);
-    }
 
-    form.addEventListener('submit', async (event) => {
-      event.preventDefault();
-      if (!form.reportValidity()) return;
-
-      if (submitButton.disabled) return;
-
-      const payload = Object.fromEntries(new FormData(form).entries());
-      payload.programTambahan = form.querySelector('input[name="programTambahan"]:checked')?.value || '';
-      submissionId = submissionId || createSubmissionId();
-      payload.requestId = submissionId;
-      submitButton.disabled = true;
-      result.dataset.state = 'info';
-      result.textContent = 'Mengirim pendaftaran...';
-
-      try {
-        const response = await submitToAppsScript(payload);
-        if (response?.result !== 'success') {
-          throw new Error(response?.error || 'Apps Script menolak pendaftaran tanpa memberikan alasan.');
+      async function submitToAppsScript(payload) {
+        try {
+          const body = new URLSearchParams({
+            ...payload,
+            responseMode: "json",
+          });
+          const res = await fetch(API_URL, {
+            method: "POST",
+            body,
+          });
+          if (res.ok) {
+            const data = await res.json();
+            if (data && typeof data === "object" && data.result) {
+              return data;
+            }
+          }
+        } catch (_) {
+          // Fallback ke iframe postMessage jika fetch diblokir CORS (misal versi deployment lama)
         }
-        if (!response.noRegistrasi || !response.nama || !response.jenjang) {
-          throw new Error('Apps Script menyimpan pendaftaran tetapi respons sukses tidak lengkap. Perbarui deployment Code.gs ke versi terbaru.');
-        }
-
-        result.dataset.state = 'success';
-        result.textContent = `Pendaftaran berhasil!\nNama: ${response.nama}\nJenjang: ${response.jenjang}\nNomor pendaftaran: ${response.noRegistrasi}`;
-        submissionId = null;
-        form.reset();
-        syncAdditionalProgramOptions();
-      } catch (error) {
-        result.dataset.state = 'error';
-        result.textContent = `Pendaftaran gagal: ${error.message} Jika Anda mencoba lagi setelah koneksi atau deployment diperbaiki, sistem menggunakan ID permintaan yang sama untuk mencegah data ganda.`;
-      } finally {
-        submitButton.disabled = false;
+        return submitViaIframe(payload);
       }
-    });
 
-    document.getElementById('statusForm').addEventListener('submit', (event) => {
-      event.preventDefault();
-      if (!event.currentTarget.reportValidity()) return;
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        if (!form.reportValidity()) return;
 
-      const statusResult = document.getElementById('statusResult');
-      statusResult.dataset.state = 'info';
-      statusResult.textContent = 'Pemeriksaan status belum terhubung ke Google Sheets. Nomor pendaftaran belum diperiksa.';
-    });
-  </script>
-</body>
+        if (submitButton.disabled) return;
+
+        const payload = Object.fromEntries(new FormData(form).entries());
+        payload.programTambahan =
+          form.querySelector('input[name="programTambahan"]:checked')?.value ||
+          "";
+        submissionId = submissionId || createSubmissionId();
+        payload.requestId = submissionId;
+        submitButton.disabled = true;
+        result.dataset.state = "info";
+        result.textContent = "Mengirim pendaftaran...";
+
+        try {
+          const response = await submitToAppsScript(payload);
+          if (response?.result !== "success") {
+            throw new Error(
+              response?.error ||
+                "Apps Script menolak pendaftaran tanpa memberikan alasan.",
+            );
+          }
+          if (!response.noRegistrasi || !response.nama || !response.jenjang) {
+            throw new Error(
+              "Apps Script menyimpan pendaftaran tetapi respons sukses tidak lengkap. Perbarui deployment Code.gs ke versi terbaru.",
+            );
+          }
+
+          result.dataset.state = "success";
+          result.textContent = `Pendaftaran berhasil!\nNama: ${response.nama}\nJenjang: ${response.jenjang}\nNomor pendaftaran: ${response.noRegistrasi}`;
+          submissionId = null;
+          form.reset();
+          syncAdditionalProgramOptions();
+        } catch (error) {
+          result.dataset.state = "error";
+          result.textContent = `Pendaftaran gagal: ${error.message} Jika Anda mencoba lagi setelah koneksi atau deployment diperbaiki, sistem menggunakan ID permintaan yang sama untuk mencegah data ganda.`;
+        } finally {
+          submitButton.disabled = false;
+        }
+      });
+
+      document
+        .getElementById("statusForm")
+        .addEventListener("submit", (event) => {
+          event.preventDefault();
+          if (!event.currentTarget.reportValidity()) return;
+
+          const statusResult = document.getElementById("statusResult");
+          statusResult.dataset.state = "info";
+          statusResult.textContent =
+            "Pemeriksaan status belum terhubung ke Google Sheets. Nomor pendaftaran belum diperiksa.";
+        });
+    </script>
+  </body>
 </html>
