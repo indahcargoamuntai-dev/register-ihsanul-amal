@@ -922,7 +922,7 @@
       const apiFrame = document.getElementById("registrationApiFrame");
 
       const API_URL =
-        "https://script.google.com/macros/s/AKfycbwk_Ov89JKl8SlEMJWxgqzybjhZIYP02-XMu4JU_fEr/dev";
+        "https://script.google.com/macros/s/AKfycbytrOJVB5J2kbhZPILtqJ5iwCh_7UzBhW6_Y2Tq9_2VKIcbOe30oCN1dcR8UTXEtK7q/exec";
       const REQUEST_TIMEOUT_MS = 120000;
       const FRAME_RESPONSE_TIMEOUT_MS = 30000;
       const unitSekolah = document.getElementById("unitSekolah");
@@ -1022,13 +1022,15 @@
           requestForm.acceptCharset = "UTF-8";
           requestForm.hidden = true;
 
-          Object.entries({ ...payload, responseMode: "iframe" }).forEach(([name, value]) => {
-            const input = document.createElement("input");
-            input.type = "hidden";
-            input.name = name;
-            input.value = value;
-            requestForm.appendChild(input);
-          });
+          Object.entries({ ...payload, responseMode: "iframe" }).forEach(
+            ([name, value]) => {
+              const input = document.createElement("input");
+              input.type = "hidden";
+              input.name = name;
+              input.value = value;
+              requestForm.appendChild(input);
+            },
+          );
 
           document.body.appendChild(requestForm);
           requestForm.submit();
