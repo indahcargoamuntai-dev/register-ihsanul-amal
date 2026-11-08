@@ -555,7 +555,7 @@
         : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
     }
 
-    function submitToAppsScript(payload) {
+    function submitViaIframe(payload) {
       return new Promise((resolve, reject) => {
         let responseTimeoutId;
         const requestTimeoutId = window.setTimeout(() => {
@@ -573,11 +573,12 @@
         }
 
         function handleResponse(messageEvent) {
-          if (messageEvent.source !== apiFrame.contentWindow) return;
           if (messageEvent.data?.type !== 'ppdb-registration-response') return;
+          const responsePayload = messageEvent.data.payload;
+          if (responsePayload?.requestId && responsePayload.requestId !== payload.requestId) return;
 
           cleanup();
-          resolve(messageEvent.data.payload);
+          resolve(responsePayload);
         }
 
         function handleFrameLoad() {
@@ -610,6 +611,25 @@
         requestForm.submit();
         requestForm.remove();
       });
+    }
+
+    async function submitToAppsScript(payload) {
+      try {
+        const body = new URLSearchParams({ ...payload, responseMode: 'json' });
+        const res = await fetch(API_URL, {
+          method: 'POST',
+          body
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data && typeof data === 'object' && data.result) {
+            return data;
+          }
+        }
+      } catch (_) {
+        // Fallback ke iframe postMessage jika fetch diblokir CORS (misal versi deployment lama)
+      }
+      return submitViaIframe(payload);
     }
 
     form.addEventListener('submit', async (event) => {

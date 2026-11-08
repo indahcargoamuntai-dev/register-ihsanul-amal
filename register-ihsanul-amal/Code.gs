@@ -40,12 +40,16 @@ function doPost(e) {
 
     stage = 'memeriksa pengiriman ulang';
     var cache = CacheService.getScriptCache();
-    var cachedResponse = cache.get('ppdb:' + data.requestId);
+    var cachedResponse = null;
+    try {
+      cachedResponse = cache.get('ppdb:' + data.requestId);
+    } catch (_) {}
     if (cachedResponse) {
       var previousResponse = JSON.parse(cachedResponse);
+      previousResponse.requestId = previousResponse.requestId || data.requestId;
       previousResponse.nama = previousResponse.nama || data.namaLengkap;
       previousResponse.jenjang = previousResponse.jenjang || data.jenjang;
-      return responsePage_(previousResponse);
+      return sendResponse_(previousResponse, data);
     }
 
     stage = 'membuka spreadsheet';
@@ -61,6 +65,7 @@ function doPost(e) {
     var noRegistrasi = generateRegistrationNumber_(sheet, data.jenjang);
     var response = {
       result: 'success',
+      requestId: data.requestId,
       nama: data.namaLengkap,
       jenjang: data.jenjang,
       noRegistrasi: noRegistrasi
@@ -94,16 +99,20 @@ function doPost(e) {
       data.noHp,
       data.penghasilanOrtu
     ].map(safeCellValue_));
+    SpreadsheetApp.flush();
 
     stage = 'menyimpan tanda pengiriman ulang';
-    cache.put('ppdb:' + data.requestId, JSON.stringify(response), 21600);
-    return responsePage_(response);
+    try {
+      cache.put('ppdb:' + data.requestId, JSON.stringify(response), 21600);
+    } catch (_) {}
+    return sendResponse_(response, data);
   } catch (error) {
-    return responsePage_({
+    return sendResponse_({
       result: 'error',
+      requestId: e && e.parameter ? e.parameter.requestId : '',
       code: error && error.code ? error.code : 'REGISTRATION_FAILED',
       error: 'Gagal ' + stage + ': ' + (error && error.message ? error.message : String(error))
-    });
+    }, e && e.parameter ? e.parameter : {});
   } finally {
     if (lock.hasLock()) {
       lock.releaseLock();
@@ -243,14 +252,28 @@ function safeCellValue_(value) {
   return /^[=+\-@]/.test(value) ? "'" + value : value;
 }
 
+function sendResponse_(payload, data) {
+  if (data && data.responseMode === 'json') {
+    return ContentService
+      .createTextOutput(JSON.stringify(payload))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+  return responsePage_(payload);
+}
+
 function responsePage_(payload) {
   var serializedPayload = JSON.stringify(payload)
     .replace(/</g, '\\u003c')
     .replace(/\u2028/g, '\\u2028')
     .replace(/\u2029/g, '\\u2029');
   var html = '<!doctype html><html><body><script>' +
-    'window.parent.postMessage({type:"ppdb-registration-response",payload:' +
-    serializedPayload + '}, "*");' +
+    '(function(){' +
+    'var msg={type:"ppdb-registration-response",payload:' + serializedPayload + '};' +
+    'var targets=[];' +
+    'try{if(window.top&&window.top!==window)targets.push(window.top);}catch(e){}' +
+    'try{var w=window;while(w.parent&&w.parent!==w){w=w.parent;if(targets.indexOf(w)===-1)targets.push(w);}}catch(e){}' +
+    'targets.forEach(function(t){try{t.postMessage(msg,"*");}catch(e){}});' +
+    '})();' +
     '<\/script></body></html>';
 
   return HtmlService.createHtmlOutput(html)
