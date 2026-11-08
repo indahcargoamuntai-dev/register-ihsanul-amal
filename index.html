@@ -300,7 +300,8 @@
         padding: 0;
         accent-color: var(--turquoise-primary);
       }
-      #result {
+      #result,
+      #statusResult {
         margin-top: 16px;
         padding: 14px 16px;
         border-radius: 9px;
@@ -311,24 +312,46 @@
       #statusResult:empty {
         display: none;
       }
-      #result[data-state="success"] {
+      #result[data-state="success"],
+      #statusResult[data-state="success"] {
         background: var(--turquoise-soft);
         color: var(--turquoise-primary);
         border-left: 4px solid var(--turquoise-light);
       }
-      #result[data-state="error"] {
+      #result[data-state="error"],
+      #statusResult[data-state="error"] {
         background: #fff0ef;
         color: #8e2924;
+        border-left: 4px solid #d9534f;
       }
       #result[data-state="info"],
       #statusResult[data-state="info"] {
-        margin-top: 16px;
-        padding: 14px 16px;
-        border-radius: 9px;
         background: #eff6ff;
         color: var(--navy-primary);
         border-left: 4px solid var(--blue-accent);
-        line-height: 1.5;
+      }
+      .status-detail-list {
+        display: grid;
+        grid-template-columns: 160px 1fr;
+        gap: 8px 12px;
+        margin: 0 0 12px;
+        white-space: normal;
+      }
+      .status-detail-list dt {
+        font-weight: 700;
+        color: var(--navy-primary);
+      }
+      .status-detail-list dd {
+        margin: 0;
+        color: #26374a;
+      }
+      .status-note {
+        margin: 12px 0 0;
+        padding-top: 10px;
+        border-top: 1px solid rgb(15 107 120 / 20%);
+        font-weight: 700;
+        color: var(--navy-primary);
+        white-space: normal;
       }
       .privacy-note {
         margin: 16px 0 0;
@@ -381,6 +404,13 @@
         .wide,
         .half {
           grid-column: auto;
+        }
+        .status-detail-list {
+          grid-template-columns: 1fr;
+          gap: 2px;
+        }
+        .status-detail-list dd {
+          margin-bottom: 8px;
         }
       }
     </style>
@@ -902,14 +932,14 @@
               id="registrationNumber"
               name="registrationNumber"
               autocomplete="off"
-              placeholder="Contoh: PPDB-2027-0001"
+              placeholder="Contoh: SD001 / SMP001 / TK001 / KB001"
               required
               maxlength="40"
             />
             <p class="hint">
               Gunakan nomor yang tertera pada bukti pendaftaran.
             </p>
-            <button class="action-button mt-3" type="submit">
+            <button class="action-button mt-3" type="submit" id="btnCheckStatus">
               Cek Status Pendaftaran
             </button>
             <div id="statusResult" role="status" aria-live="polite"></div>
@@ -1107,17 +1137,78 @@
         }
       });
 
-      document
-        .getElementById("statusForm")
-        .addEventListener("submit", (event) => {
-          event.preventDefault();
-          if (!event.currentTarget.reportValidity()) return;
+      const statusForm = document.getElementById("statusForm");
+      const statusResult = document.getElementById("statusResult");
+      const statusButton = document.getElementById("btnCheckStatus");
 
-          const statusResult = document.getElementById("statusResult");
-          statusResult.dataset.state = "info";
-          statusResult.textContent =
-            "Pemeriksaan status belum terhubung ke Google Sheets. Nomor pendaftaran belum diperiksa.";
+      function renderStatusSuccess(data, message) {
+        statusResult.textContent = "";
+        statusResult.dataset.state = "success";
+
+        const dl = document.createElement("dl");
+        dl.className = "status-detail-list";
+
+        const items = [
+          ["No. Registrasi", data.noRegistrasi],
+          ["Nama", data.namaLengkap],
+          ["Jenjang", data.jenjang],
+          ["Asal Sekolah", data.namaAsalSekolah],
+          ["Tempat Lahir", data.tempatLahir],
+          ["Tanggal Lahir", data.tanggalLahir],
+        ];
+
+        items.forEach(([label, value]) => {
+          const dt = document.createElement("dt");
+          dt.textContent = label;
+          const dd = document.createElement("dd");
+          dd.textContent = value || "-";
+          dl.append(dt, dd);
         });
+
+        const note = document.createElement("p");
+        note.className = "status-note";
+        note.textContent =
+          message ||
+          "Data ananda sudah tersimpan. silakan catat nomor pendaftaran anda untuk Tes PPDB di sekolah.";
+
+        statusResult.append(dl, note);
+      }
+
+      statusForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        if (!statusForm.reportValidity()) return;
+        if (statusButton.disabled) return;
+
+        const noRegistrasi = document
+          .getElementById("registrationNumber")
+          .value.trim();
+        if (!noRegistrasi) return;
+
+        statusButton.disabled = true;
+        statusResult.dataset.state = "info";
+        statusResult.textContent = "Memeriksa data pendaftaran...";
+
+        try {
+          const response = await submitToAppsScript({
+            action: "checkStatus",
+            noRegistrasi,
+            requestId: createSubmissionId(),
+          });
+
+          if (response?.result === "success" && response.data) {
+            renderStatusSuccess(response.data, response.message);
+          } else {
+            statusResult.dataset.state = "error";
+            statusResult.textContent =
+              response?.error || "Data pendaftaran tidak ditemukan.";
+          }
+        } catch (error) {
+          statusResult.dataset.state = "error";
+          statusResult.textContent = `Gagal memeriksa status: ${error.message}`;
+        } finally {
+          statusButton.disabled = false;
+        }
+      });
     </script>
   </body>
 </html>

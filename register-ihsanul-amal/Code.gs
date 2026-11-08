@@ -26,6 +26,12 @@ var HEADERS = [
   'penghasilanOrtu'
 ];
 
+function doGet(e) {
+  var params = e && e.parameter ? e.parameter : {};
+  var response = checkRegistrationStatus_(params);
+  return sendResponse_(response, params);
+}
+
 function doPost(e) {
   var lock = LockService.getScriptLock();
   var stage = 'memeriksa data formulir';
@@ -33,6 +39,9 @@ function doPost(e) {
 
   try {
     data = parseRequestData_(e);
+    if (data.action === 'checkStatus') {
+      return sendResponse_(checkRegistrationStatus_(data), data);
+    }
     validateRegistration_(data);
     stage = 'mengunci proses pendaftaran';
     if (!lock.tryLock(10000)) {
@@ -266,6 +275,66 @@ function generateRegistrationNumber_(sheet, jenjang) {
   }
 
   return jenjang + String(highestNumber + 1).padStart(3, '0');
+}
+
+function checkRegistrationStatus_(params) {
+  try {
+    var rawNoReg = params && (params.noRegistrasi || params.registrationNumber) || '';
+    var targetNoReg = String(rawNoReg).trim().toUpperCase();
+
+    if (!targetNoReg) {
+      return {
+        result: 'error',
+        requestId: params && params.requestId ? params.requestId : '',
+        code: 'MISSING_REGISTRATION_NUMBER',
+        error: 'Nomor pendaftaran wajib diisi.'
+      };
+    }
+
+    var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+    if (!spreadsheet) {
+      throw new Error('Spreadsheet aktif tidak ditemukan. Pastikan Apps Script terikat ke Google Sheets.');
+    }
+
+    var sheet = spreadsheet.getActiveSheet();
+    var lastRow = sheet.getLastRow();
+
+    if (lastRow > 1) {
+      var rows = sheet.getRange(2, 1, lastRow - 1, 13).getDisplayValues();
+      for (var i = 0; i < rows.length; i++) {
+        var row = rows[i];
+        if (String(row[1]).trim().toUpperCase() === targetNoReg) {
+          return {
+            result: 'success',
+            requestId: params && params.requestId ? params.requestId : '',
+            data: {
+              noRegistrasi: row[1],
+              namaLengkap: row[7],
+              jenjang: row[2],
+              namaAsalSekolah: row[5],
+              tempatLahir: row[11],
+              tanggalLahir: row[12]
+            },
+            message: 'Data ananda sudah tersimpan. silakan catat nomor pendaftaran anda untuk Tes PPDB di sekolah.'
+          };
+        }
+      }
+    }
+
+    return {
+      result: 'not_found',
+      requestId: params && params.requestId ? params.requestId : '',
+      code: 'NOT_FOUND',
+      error: 'Data pendaftaran dengan nomor "' + targetNoReg + '" tidak ditemukan. Pastikan nomor pendaftaran yang dimasukkan sudah benar.'
+    };
+  } catch (error) {
+    return {
+      result: 'error',
+      requestId: params && params.requestId ? params.requestId : '',
+      code: 'STATUS_CHECK_FAILED',
+      error: 'Gagal memeriksa status pendaftaran: ' + (error && error.message ? error.message : String(error))
+    };
+  }
 }
 
 function combine_(firstValue, secondValue) {
