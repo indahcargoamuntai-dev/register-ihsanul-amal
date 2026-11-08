@@ -13,6 +13,10 @@
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
       rel="stylesheet"
     />
+    <link
+      href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css"
+      rel="stylesheet"
+    />
     <style>
       :root {
         --turquoise-primary: #0f6b78;
@@ -224,9 +228,24 @@
         font-weight: 650;
       }
       .optional {
-        color: #71818a;
-        font-size: 0.82rem;
-        font-weight: 400;
+        display: inline-block;
+        padding: 1px 7px;
+        margin-left: 4px;
+        border-radius: 999px;
+        background: #f1f5f9;
+        color: #64748b;
+        font-size: 0.75rem;
+        font-weight: 500;
+      }
+      .required-badge {
+        display: inline-block;
+        padding: 1px 7px;
+        margin-left: 4px;
+        border-radius: 999px;
+        background: #fff1f2;
+        color: #be123c;
+        font-size: 0.74rem;
+        font-weight: 700;
       }
       input,
       select {
@@ -238,6 +257,18 @@
         background: var(--surface);
         color: inherit;
         font: inherit;
+        transition:
+          border-color 0.2s ease,
+          box-shadow 0.2s ease,
+          background-color 0.2s ease;
+      }
+      input[required],
+      select[required] {
+        border-left: 3px solid var(--turquoise-primary);
+      }
+      input:not([required]):not([type="checkbox"]) {
+        border-style: dashed;
+        background: #fafcfd;
       }
       input:focus,
       select:focus {
@@ -247,12 +278,62 @@
       input::placeholder {
         color: #8a989f;
       }
+      input[required]::placeholder {
+        color: #94a3b8;
+        font-style: italic;
+      }
+      input.parsley-success,
+      select.parsley-success {
+        border-color: #15803d !important;
+        border-left: 4px solid #15803d !important;
+        background-color: #f0fdf4;
+      }
+      input.parsley-error,
+      select.parsley-error {
+        border-color: #dc2626 !important;
+        border-left: 4px solid #dc2626 !important;
+        background-color: #fef2f2;
+      }
+      .parsley-errors-list {
+        margin: 5px 0 0;
+        padding: 0;
+        list-style: none;
+        color: #dc2626;
+        font-size: 0.78rem;
+        font-weight: 600;
+      }
+      .parsley-errors-list.filled {
+        animation: parsleyFadeIn 0.2s ease-in-out;
+      }
+      @keyframes parsleyFadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(-2px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .field-legend-note {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+        margin-top: 8px;
+        font-size: 0.85rem;
+        color: #475569;
+      }
       .hint {
         margin: 5px 0 0;
         color: #71818a;
         font-size: 0.78rem;
       }
       .action-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
         width: 100%;
         min-height: 50px;
         padding: 12px 18px;
@@ -263,9 +344,20 @@
         font: inherit;
         font-weight: 750;
         cursor: pointer;
+        transition:
+          background 0.2s ease,
+          opacity 0.2s ease;
       }
-      .action-button:hover {
+      .action-button:hover:not(:disabled) {
         background: var(--turquoise-light);
+      }
+      .action-button:disabled {
+        opacity: 0.8;
+        cursor: wait;
+      }
+      .swal2-loader {
+        border-color: var(--turquoise-primary) transparent
+          var(--turquoise-primary) transparent !important;
       }
       .text-success {
         color: var(--turquoise-primary) !important;
@@ -548,15 +640,31 @@
               Isi data sesuai dokumen resmi. Kolom bertanda * wajib diisi;
               periksa kembali NIK dan nomor kontak sebelum mengirim.
             </p>
+            <div class="field-legend-note">
+              <span><span class="required-badge">* Wajib diisi</span> Kolom wajib dilengkapi</span>
+              <span><span class="optional">(opsional)</span> Boleh dikosongkan jika belum ada</span>
+            </div>
           </div>
-          <form class="form-card" id="registrationForm">
+          <form
+            class="form-card"
+            id="registrationForm"
+            data-parsley-validate
+            novalidate
+          >
             <fieldset>
               <legend>1. Pilihan Pendidikan</legend>
               <div class="fields">
                 <div class="field wide">
-                  <label for="unitSekolah">Unit sekolah tujuan *</label>
-                  <select id="unitSekolah" name="jenjang" required>
-                    <option value="">-- Pilih unit sekolah --</option>
+                  <label for="unitSekolah"
+                    >Unit sekolah tujuan <span class="required-badge">* Wajib</span></label
+                  >
+                  <select
+                    id="unitSekolah"
+                    name="jenjang"
+                    required
+                    data-parsley-required-message="Wajib dipilih: Pilih unit sekolah tujuan."
+                  >
+                    <option value="">-- Wajib diisi: Pilih unit sekolah --</option>
                     <option value="KB">KB</option>
                     <option value="TK">TK</option>
                     <option value="SD">SD</option>
@@ -589,13 +697,16 @@
                 </div>
 
                 <div class="field">
-                  <label for="statusAsalSekolah">Status asal sekolah *</label>
+                  <label for="statusAsalSekolah"
+                    >Status asal sekolah <span class="required-badge">* Wajib</span></label
+                  >
                   <select
                     id="statusAsalSekolah"
                     name="statusAsalSekolah"
                     required
+                    data-parsley-required-message="Wajib dipilih: Pilih status asal sekolah."
                   >
-                    <option value="">-- Pilih status --</option>
+                    <option value="">-- Wajib diisi: Pilih status --</option>
                     <option>Internal Ihsanul Amal</option>
                     <option>TK Islam Terpadu Nurul Ilmi</option>
                     <option>Bukan dari Ihsanul Amal atau Nurul Ilmi</option>
@@ -603,13 +714,15 @@
                 </div>
                 <div class="field">
                   <label for="namaAsalSekolah"
-                    >Nama asal sekolah / madrasah *</label
+                    >Nama asal sekolah / madrasah <span class="required-badge">* Wajib</span></label
                   >
                   <input
                     id="namaAsalSekolah"
                     name="namaAsalSekolah"
+                    placeholder="Wajib diisi"
                     required
                     maxlength="150"
+                    data-parsley-required-message="Wajib diisi: Masukkan nama asal sekolah / madrasah."
                   />
                 </div>
                 <div class="field">
@@ -620,6 +733,7 @@
                   <input
                     id="npsnAsal"
                     name="npsnAsal"
+                    placeholder="Opsional (boleh dikosongkan)"
                     inputmode="numeric"
                     maxlength="20"
                   />
@@ -632,38 +746,48 @@
               <div class="fields">
                 <div class="field wide">
                   <label for="namaLengkap"
-                    >Nama lengkap (sesuai ijazah) *</label
+                    >Nama lengkap (sesuai ijazah) <span class="required-badge">* Wajib</span></label
                   >
                   <input
                     id="namaLengkap"
                     name="namaLengkap"
+                    placeholder="Wajib diisi (sesuai ijazah / akta)"
                     autocomplete="name"
                     required
                     maxlength="150"
+                    data-parsley-required-message="Wajib diisi: Masukkan nama lengkap calon siswa."
                   />
                 </div>
                 <div class="field">
-                  <label for="nisn">NISN (10 digit) *</label>
+                  <label for="nisn">NISN (10 digit) <span class="required-badge">* Wajib</span></label>
                   <input
                     id="nisn"
                     name="nisn"
+                    placeholder="Wajib diisi (10 digit angka)"
                     inputmode="numeric"
                     pattern="[0-9]{10}"
                     minlength="10"
                     maxlength="10"
                     required
+                    data-parsley-required-message="Wajib diisi: Masukkan 10 digit NISN."
+                    data-parsley-pattern="^[0-9]{10}$"
+                    data-parsley-pattern-message="NISN harus tepat 10 digit angka."
                   />
                 </div>
                 <div class="field">
-                  <label for="nik">NIK (16 digit) *</label>
+                  <label for="nik">NIK (16 digit) <span class="required-badge">* Wajib</span></label>
                   <input
                     id="nik"
                     name="nik"
+                    placeholder="Wajib diisi (16 digit angka)"
                     inputmode="numeric"
                     pattern="[0-9]{16}"
                     minlength="16"
                     maxlength="16"
                     required
+                    data-parsley-required-message="Wajib diisi: Masukkan 16 digit NIK."
+                    data-parsley-pattern="^[0-9]{16}$"
+                    data-parsley-pattern-message="NIK harus tepat 16 digit angka."
                   />
                 </div>
                 <div class="field">
@@ -673,33 +797,45 @@
                   <input
                     id="nomorKK"
                     name="nomorKK"
+                    placeholder="Opsional (16 digit angka)"
                     inputmode="numeric"
                     pattern="[0-9]{16}"
                     maxlength="16"
+                    data-parsley-pattern="^[0-9]{16}$"
+                    data-parsley-pattern-message="Nomor KK harus 16 digit angka jika diisi."
                   />
                 </div>
                 <div class="field">
-                  <label for="tempatLahir">Tempat lahir *</label>
+                  <label for="tempatLahir">Tempat lahir <span class="required-badge">* Wajib</span></label>
                   <input
                     id="tempatLahir"
                     name="tempatLahir"
+                    placeholder="Wajib diisi"
                     required
                     maxlength="100"
+                    data-parsley-required-message="Wajib diisi: Masukkan tempat lahir."
                   />
                 </div>
                 <div class="field">
-                  <label for="tanggalLahir">Tanggal lahir *</label>
+                  <label for="tanggalLahir">Tanggal lahir <span class="required-badge">* Wajib</span></label>
                   <input
                     id="tanggalLahir"
                     name="tanggalLahir"
+                    placeholder="Wajib diisi"
                     type="date"
                     required
+                    data-parsley-required-message="Wajib diisi: Pilih tanggal lahir."
                   />
                 </div>
                 <div class="field">
-                  <label for="jenisKelamin">Jenis kelamin *</label>
-                  <select id="jenisKelamin" name="jenisKelamin" required>
-                    <option value="">-- Pilih --</option>
+                  <label for="jenisKelamin">Jenis kelamin <span class="required-badge">* Wajib</span></label>
+                  <select
+                    id="jenisKelamin"
+                    name="jenisKelamin"
+                    required
+                    data-parsley-required-message="Wajib dipilih: Pilih jenis kelamin."
+                  >
+                    <option value="">-- Wajib diisi: Pilih --</option>
                     <option value="Laki-laki">Laki-laki</option>
                     <option value="Perempuan">Perempuan</option>
                   </select>
@@ -711,48 +847,58 @@
               <legend>3. Alamat Lengkap dan Data Orang Tua</legend>
               <div class="fields address-family-fields">
                 <div class="field wide">
-                  <label for="jalanRtRw">Jalan / RT / RW *</label>
+                  <label for="jalanRtRw">Jalan / RT / RW <span class="required-badge">* Wajib</span></label>
                   <input
                     id="jalanRtRw"
                     name="jalanRtRw"
+                    placeholder="Wajib diisi (nama jalan, RT/RW)"
                     required
                     maxlength="250"
+                    data-parsley-required-message="Wajib diisi: Masukkan alamat jalan / RT / RW."
                   />
                 </div>
                 <div class="field">
-                  <label for="provinsi">Provinsi *</label>
+                  <label for="provinsi">Provinsi <span class="required-badge">* Wajib</span></label>
                   <input
                     id="provinsi"
                     name="provinsi"
+                    placeholder="Wajib diisi"
                     required
                     maxlength="100"
+                    data-parsley-required-message="Wajib diisi: Masukkan nama provinsi."
                   />
                 </div>
                 <div class="field">
-                  <label for="kabupatenKota">Kabupaten / kota *</label>
+                  <label for="kabupatenKota">Kabupaten / kota <span class="required-badge">* Wajib</span></label>
                   <input
                     id="kabupatenKota"
                     name="kabupatenKota"
+                    placeholder="Wajib diisi"
                     required
                     maxlength="100"
+                    data-parsley-required-message="Wajib diisi: Masukkan kabupaten / kota."
                   />
                 </div>
                 <div class="field">
-                  <label for="kecamatan">Kecamatan *</label>
+                  <label for="kecamatan">Kecamatan <span class="required-badge">* Wajib</span></label>
                   <input
                     id="kecamatan"
                     name="kecamatan"
+                    placeholder="Wajib diisi"
                     required
                     maxlength="100"
+                    data-parsley-required-message="Wajib diisi: Masukkan nama kecamatan."
                   />
                 </div>
                 <div class="field">
-                  <label for="desaKelurahan">Desa / kelurahan *</label>
+                  <label for="desaKelurahan">Desa / kelurahan <span class="required-badge">* Wajib</span></label>
                   <input
                     id="desaKelurahan"
                     name="desaKelurahan"
+                    placeholder="Wajib diisi"
                     required
                     maxlength="100"
+                    data-parsley-required-message="Wajib diisi: Masukkan desa / kelurahan."
                   />
                 </div>
                 <div class="field">
@@ -763,24 +909,34 @@
                   <input
                     id="nikAyah"
                     name="nikAyah"
+                    placeholder="Opsional (16 digit angka)"
                     inputmode="numeric"
                     pattern="[0-9]{16}"
                     maxlength="16"
+                    data-parsley-pattern="^[0-9]{16}$"
+                    data-parsley-pattern-message="NIK ayah harus 16 digit angka jika diisi."
                   />
                 </div>
                 <div class="field">
-                  <label for="namaAyah">Nama ayah *</label>
+                  <label for="namaAyah">Nama ayah <span class="required-badge">* Wajib</span></label>
                   <input
                     id="namaAyah"
                     name="namaAyah"
+                    placeholder="Wajib diisi"
                     required
                     maxlength="150"
+                    data-parsley-required-message="Wajib diisi: Masukkan nama ayah / wali."
                   />
                 </div>
                 <div class="field">
-                  <label for="pendidikanAyah">Pendidikan ayah *</label>
-                  <select id="pendidikanAyah" name="pendidikanAyah" required>
-                    <option value="">-- Pilih pendidikan --</option>
+                  <label for="pendidikanAyah">Pendidikan ayah <span class="required-badge">* Wajib</span></label>
+                  <select
+                    id="pendidikanAyah"
+                    name="pendidikanAyah"
+                    required
+                    data-parsley-required-message="Wajib dipilih: Pilih pendidikan ayah."
+                  >
+                    <option value="">-- Wajib diisi: Pilih pendidikan --</option>
                     <option>Tidak sekolah</option>
                     <option>SD / MI</option>
                     <option>SMP / MTs</option>
@@ -793,9 +949,14 @@
                   </select>
                 </div>
                 <div class="field">
-                  <label for="pekerjaanAyah">Pekerjaan ayah *</label>
-                  <select id="pekerjaanAyah" name="pekerjaanAyah" required>
-                    <option value="">-- Pilih --</option>
+                  <label for="pekerjaanAyah">Pekerjaan ayah <span class="required-badge">* Wajib</span></label>
+                  <select
+                    id="pekerjaanAyah"
+                    name="pekerjaanAyah"
+                    required
+                    data-parsley-required-message="Wajib dipilih: Pilih pekerjaan ayah."
+                  >
+                    <option value="">-- Wajib diisi: Pilih --</option>
                     <option value="PNS/TNI/Polri">PNS/TNI/Polri</option>
                     <option value="Karyawan Swasta/BUMN">
                       Karyawan Swasta/BUMN
@@ -816,19 +977,34 @@
                   <input
                     id="nikIbu"
                     name="nikIbu"
+                    placeholder="Opsional (16 digit angka)"
                     inputmode="numeric"
                     pattern="[0-9]{16}"
                     maxlength="16"
+                    data-parsley-pattern="^[0-9]{16}$"
+                    data-parsley-pattern-message="NIK ibu harus 16 digit angka jika diisi."
                   />
                 </div>
                 <div class="field">
-                  <label for="namaIbu">Nama ibu *</label>
-                  <input id="namaIbu" name="namaIbu" required maxlength="150" />
+                  <label for="namaIbu">Nama ibu <span class="required-badge">* Wajib</span></label>
+                  <input
+                    id="namaIbu"
+                    name="namaIbu"
+                    placeholder="Wajib diisi"
+                    required
+                    maxlength="150"
+                    data-parsley-required-message="Wajib diisi: Masukkan nama ibu."
+                  />
                 </div>
                 <div class="field">
-                  <label for="pendidikanIbu">Pendidikan ibu *</label>
-                  <select id="pendidikanIbu" name="pendidikanIbu" required>
-                    <option value="">-- Pilih pendidikan --</option>
+                  <label for="pendidikanIbu">Pendidikan ibu <span class="required-badge">* Wajib</span></label>
+                  <select
+                    id="pendidikanIbu"
+                    name="pendidikanIbu"
+                    required
+                    data-parsley-required-message="Wajib dipilih: Pilih pendidikan ibu."
+                  >
+                    <option value="">-- Wajib diisi: Pilih pendidikan --</option>
                     <option>Tidak sekolah</option>
                     <option>SD / MI</option>
                     <option>SMP / MTs</option>
@@ -841,9 +1017,14 @@
                   </select>
                 </div>
                 <div class="field">
-                  <label for="pekerjaanIbu">Pekerjaan ibu *</label>
-                  <select id="pekerjaanIbu" name="pekerjaanIbu" required>
-                    <option value="">-- Pilih --</option>
+                  <label for="pekerjaanIbu">Pekerjaan ibu <span class="required-badge">* Wajib</span></label>
+                  <select
+                    id="pekerjaanIbu"
+                    name="pekerjaanIbu"
+                    required
+                    data-parsley-required-message="Wajib dipilih: Pilih pekerjaan ibu."
+                  >
+                    <option value="">-- Wajib diisi: Pilih --</option>
                     <option value="PNS/TNI/Polri">PNS/TNI/Polri</option>
                     <option value="Karyawan Swasta/BUMN">
                       Karyawan Swasta/BUMN
@@ -858,23 +1039,30 @@
                   </select>
                 </div>
                 <div class="field contact-half">
-                  <label for="noHp">No. HP / WA aktif *</label>
+                  <label for="noHp">No. HP / WA aktif <span class="required-badge">* Wajib</span></label>
                   <input
                     id="noHp"
                     name="noHp"
+                    placeholder="Wajib diisi (contoh: 0812xxxxxxxx)"
                     type="tel"
                     inputmode="tel"
                     autocomplete="tel"
                     required
                     maxlength="20"
+                    data-parsley-required-message="Wajib diisi: Masukkan nomor HP / WhatsApp aktif."
                   />
                 </div>
                 <div class="field contact-half">
                   <label for="penghasilanOrtu"
-                    >Penghasilan orang tua / bulan *</label
+                    >Penghasilan orang tua / bulan <span class="required-badge">* Wajib</span></label
                   >
-                  <select id="penghasilanOrtu" name="penghasilanOrtu" required>
-                    <option value="">-- Pilih Rentang --</option>
+                  <select
+                    id="penghasilanOrtu"
+                    name="penghasilanOrtu"
+                    required
+                    data-parsley-required-message="Wajib dipilih: Pilih rentang penghasilan orang tua."
+                  >
+                    <option value="">-- Wajib diisi: Pilih Rentang --</option>
                     <option value="Kurang dari Rp 1 Juta">
                       Kurang dari Rp 1.000.000
                     </option>
@@ -899,10 +1087,10 @@
               Kirim Pendaftaran
             </button>
             <div id="result" role="status" aria-live="polite"></div>
-            <p class="privacy-note">
+            <!-- <p class="privacy-note">
               Data pendaftaran dikirim ke Google Sheets. Pastikan akses
               spreadsheet dibatasi kepada petugas yang berwenang.
-            </p>
+            </p> -->
           </form>
           <iframe
             id="registrationApiFrame"
@@ -926,20 +1114,32 @@
               penerimaan.
             </p>
           </div>
-          <form class="form-card status-card" id="statusForm">
-            <label for="registrationNumber">Nomor pendaftaran *</label>
+          <form
+            class="form-card status-card"
+            id="statusForm"
+            data-parsley-validate
+            novalidate
+          >
+            <label for="registrationNumber"
+              >Nomor pendaftaran <span class="required-badge">* Wajib</span></label
+            >
             <input
               id="registrationNumber"
               name="registrationNumber"
               autocomplete="off"
-              placeholder="Contoh: SD001 / SMP001 / TK001 / KB001"
+              placeholder="Wajib diisi (Contoh: SD001 / SMP001 / TK001 / KB001)"
               required
               maxlength="40"
+              data-parsley-required-message="Wajib diisi: Masukkan nomor pendaftaran Anda."
             />
             <p class="hint">
               Gunakan nomor yang tertera pada bukti pendaftaran.
             </p>
-            <button class="action-button mt-3" type="submit" id="btnCheckStatus">
+            <button
+              class="action-button mt-3"
+              type="submit"
+              id="btnCheckStatus"
+            >
               Cek Status Pendaftaran
             </button>
             <div id="statusResult" role="status" aria-live="polite"></div>
@@ -948,12 +1148,108 @@
       </div>
     </main>
 
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/parsleyjs@2.9.2/dist/parsley.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
     <script>
       const form = document.getElementById("registrationForm");
       const result = document.getElementById("result");
       const submitButton = document.getElementById("btnSubmit");
       const apiFrame = document.getElementById("registrationApiFrame");
+
+      let registrationParsley = null;
+      let statusParsley = null;
+
+      if (window.Parsley) {
+        window.Parsley.addMessages("id", {
+          defaultMessage: "Isian ini tidak valid.",
+          type: {
+            email: "Masukkan alamat email yang valid.",
+            url: "Masukkan URL yang valid.",
+            number: "Masukkan angka yang valid.",
+            integer: "Masukkan bilangan bulat yang valid.",
+            digits: "Masukkan hanya angka.",
+            alphanum: "Masukkan huruf atau angka.",
+          },
+          notblank: "Kolom ini tidak boleh kosong.",
+          required: "Wajib diisi.",
+          pattern: "Format isian belum sesuai.",
+          min: "Nilai harus lebih besar atau sama dengan %s.",
+          max: "Nilai harus lebih kecil atau sama dengan %s.",
+          range: "Nilai harus berada di antara %s dan %s.",
+          minlength: "Isian terlalu pendek, minimal %s karakter.",
+          maxlength: "Isian terlalu panjang, maksimal %s karakter.",
+          length: "Panjang isian harus antara %s dan %s karakter.",
+          mincheck: "Pilih minimal %s pilihan.",
+          maxcheck: "Pilih maksimal %s pilihan.",
+          check: "Pilih antara %s dan %s pilihan.",
+          equalto: "Isian harus sama.",
+        });
+        window.Parsley.setLocale("id");
+      }
+
+      if (window.jQuery && window.jQuery.fn && window.jQuery.fn.parsley) {
+        const parsleyOptions = {
+          trigger: "input change focusout",
+          errorClass: "parsley-error",
+          successClass: "parsley-success",
+          errorsWrapper: '<ul class="parsley-errors-list"></ul>',
+          errorTemplate: "<li></li>",
+        };
+        registrationParsley = window.jQuery(form).parsley(parsleyOptions);
+        statusParsley = window
+          .jQuery(document.getElementById("statusForm"))
+          .parsley(parsleyOptions);
+      }
+
+      function validateWithParsley(formElement, parsleyInstance) {
+        if (parsleyInstance && typeof parsleyInstance.validate === "function") {
+          return parsleyInstance.validate();
+        }
+        return formElement.reportValidity();
+      }
+
+      function escapeHtml(value) {
+        const div = document.createElement("div");
+        div.textContent = String(value ?? "");
+        return div.innerHTML;
+      }
+
+      function setButtonLoading(button, isLoading, loadingText) {
+        if (!button) return;
+        if (isLoading) {
+          if (!button.dataset.originalText) {
+            button.dataset.originalText = button.textContent.trim();
+          }
+          button.disabled = true;
+          button.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span><span>${escapeHtml(loadingText)}</span>`;
+        } else {
+          button.disabled = false;
+          button.textContent =
+            button.dataset.originalText || button.textContent;
+        }
+      }
+
+      function showLoadingModal(title, subtitle) {
+        if (typeof Swal === "undefined") return;
+        Swal.fire({
+          title,
+          html: `<p class="mb-0 mt-1 text-secondary" style="font-size:0.95rem;">${escapeHtml(subtitle)}</p>`,
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+          showConfirmButton: false,
+          didOpen: () => {
+            Swal.showLoading();
+          },
+        });
+      }
+
+      function closeLoadingModal() {
+        if (typeof Swal !== "undefined" && Swal.isVisible()) {
+          Swal.close();
+        }
+      }
 
       const API_URL =
         "https://script.google.com/macros/s/AKfycbytrOJVB5J2kbhZPILtqJ5iwCh_7UzBhW6_Y2Tq9_2VKIcbOe30oCN1dcR8UTXEtK7q/exec";
@@ -1096,7 +1392,7 @@
 
       form.addEventListener("submit", async (event) => {
         event.preventDefault();
-        if (!form.reportValidity()) return;
+        if (!validateWithParsley(form, registrationParsley)) return;
 
         if (submitButton.disabled) return;
 
@@ -1106,9 +1402,14 @@
           "";
         submissionId = submissionId || createSubmissionId();
         payload.requestId = submissionId;
-        submitButton.disabled = true;
+        setButtonLoading(submitButton, true, "Menyimpan Pendaftaran...");
         result.dataset.state = "info";
-        result.textContent = "Mengirim pendaftaran...";
+        result.textContent =
+          "Sedang mengirim dan menyimpan data pendaftaran ke server PPDB...";
+        showLoadingModal(
+          "Memproses Pendaftaran",
+          "Mohon tunggu sebentar, data calon siswa sedang disimpan ke server PPDB...",
+        );
 
         try {
           const response = await submitToAppsScript(payload);
@@ -1124,16 +1425,46 @@
             );
           }
 
+          closeLoadingModal();
           result.dataset.state = "success";
           result.textContent = `Pendaftaran berhasil!\nNama: ${response.nama}\nJenjang: ${response.jenjang}\nNomor pendaftaran: ${response.noRegistrasi}`;
+          if (typeof Swal !== "undefined") {
+            Swal.fire({
+              icon: "success",
+              title: "Pendaftaran Berhasil!",
+              html: `
+                <div class="text-start mt-2 p-3 rounded" style="background:#e8f4f5;border-left:4px solid #0f6b78;">
+                  <div><strong>Nama:</strong> ${escapeHtml(response.nama)}</div>
+                  <div><strong>Jenjang:</strong> ${escapeHtml(response.jenjang)}</div>
+                  <div class="mt-1"><strong>Nomor Pendaftaran:</strong> <span class="fs-5 fw-bold" style="color:#0f6b78;">${escapeHtml(response.noRegistrasi)}</span></div>
+                </div>
+                <p class="small text-muted mt-3 mb-0">Silakan catat nomor pendaftaran Anda untuk Cek Status &amp; Tes PPDB di sekolah.</p>
+              `,
+              confirmButtonText: "Selesai",
+              confirmButtonColor: "#0f6b78",
+            });
+          }
           submissionId = null;
           form.reset();
+          if (registrationParsley && typeof registrationParsley.reset === "function") {
+            registrationParsley.reset();
+          }
           syncAdditionalProgramOptions();
         } catch (error) {
+          closeLoadingModal();
           result.dataset.state = "error";
           result.textContent = `Pendaftaran gagal: ${error.message} Jika Anda mencoba lagi setelah koneksi atau deployment diperbaiki, sistem menggunakan ID permintaan yang sama untuk mencegah data ganda.`;
+          if (typeof Swal !== "undefined") {
+            Swal.fire({
+              icon: "error",
+              title: "Pendaftaran Gagal",
+              text: error.message,
+              confirmButtonText: "Tutup",
+              confirmButtonColor: "#0f6b78",
+            });
+          }
         } finally {
-          submitButton.disabled = false;
+          setButtonLoading(submitButton, false);
         }
       });
 
@@ -1176,7 +1507,7 @@
 
       statusForm.addEventListener("submit", async (event) => {
         event.preventDefault();
-        if (!statusForm.reportValidity()) return;
+        if (!validateWithParsley(statusForm, statusParsley)) return;
         if (statusButton.disabled) return;
 
         const noRegistrasi = document
@@ -1184,9 +1515,13 @@
           .value.trim();
         if (!noRegistrasi) return;
 
-        statusButton.disabled = true;
+        setButtonLoading(statusButton, true, "Mencari Data...");
         statusResult.dataset.state = "info";
-        statusResult.textContent = "Memeriksa data pendaftaran...";
+        statusResult.textContent = `Mencari data pendaftaran "${noRegistrasi}" di server PPDB...`;
+        showLoadingModal(
+          "Mencari Data Pendaftaran",
+          `Sedang memeriksa nomor pendaftaran "${noRegistrasi}" pada database PPDB...`,
+        );
 
         try {
           const response = await submitToAppsScript({
@@ -1195,6 +1530,7 @@
             requestId: createSubmissionId(),
           });
 
+          closeLoadingModal();
           if (response?.result === "success" && response.data) {
             renderStatusSuccess(response.data, response.message);
           } else {
@@ -1203,10 +1539,11 @@
               response?.error || "Data pendaftaran tidak ditemukan.";
           }
         } catch (error) {
+          closeLoadingModal();
           statusResult.dataset.state = "error";
           statusResult.textContent = `Gagal memeriksa status: ${error.message}`;
         } finally {
-          statusButton.disabled = false;
+          setButtonLoading(statusButton, false);
         }
       });
     </script>
