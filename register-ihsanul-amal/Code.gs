@@ -29,9 +29,10 @@ var HEADERS = [
 function doPost(e) {
   var lock = LockService.getScriptLock();
   var stage = 'memeriksa data formulir';
+  var data = {};
 
   try {
-    var data = e && e.parameter ? e.parameter : {};
+    data = parseRequestData_(e);
     validateRegistration_(data);
     stage = 'mengunci proses pendaftaran';
     if (!lock.tryLock(10000)) {
@@ -109,15 +110,42 @@ function doPost(e) {
   } catch (error) {
     return sendResponse_({
       result: 'error',
-      requestId: e && e.parameter ? e.parameter.requestId : '',
+      requestId: data && data.requestId ? data.requestId : '',
       code: error && error.code ? error.code : 'REGISTRATION_FAILED',
       error: 'Gagal ' + stage + ': ' + (error && error.message ? error.message : String(error))
-    }, e && e.parameter ? e.parameter : {});
+    }, data);
   } finally {
     if (lock.hasLock()) {
       lock.releaseLock();
     }
   }
+}
+
+function parseRequestData_(e) {
+  var data = {};
+  if (e && e.parameter) {
+    Object.keys(e.parameter).forEach(function (key) {
+      data[key] = e.parameter[key];
+    });
+  }
+  if (e && e.postData && e.postData.contents) {
+    var contentType = String(e.postData.type || '').toLowerCase();
+    var raw = e.postData.contents;
+    if (contentType.indexOf('application/json') !== -1 || /^\s*\{/.test(raw)) {
+      try {
+        var parsed = JSON.parse(raw);
+        if (parsed && typeof parsed === 'object') {
+          Object.keys(parsed).forEach(function (key) {
+            data[key] = parsed[key];
+          });
+          if (!data.responseMode) {
+            data.responseMode = 'json';
+          }
+        }
+      } catch (_) {}
+    }
+  }
+  return data;
 }
 
 function validateRegistration_(data) {
@@ -253,12 +281,12 @@ function safeCellValue_(value) {
 }
 
 function sendResponse_(payload, data) {
-  if (data && data.responseMode === 'json') {
-    return ContentService
-      .createTextOutput(JSON.stringify(payload))
-      .setMimeType(ContentService.MimeType.JSON);
+  if (data && data.responseMode === 'iframe') {
+    return responsePage_(payload);
   }
-  return responsePage_(payload);
+  return ContentService
+    .createTextOutput(JSON.stringify(payload))
+    .setMimeType(ContentService.MimeType.JSON);
 }
 
 function responsePage_(payload) {
