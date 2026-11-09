@@ -315,6 +315,18 @@
           transform: translateY(0);
         }
       }
+      .subsection-title {
+        grid-column: 1 / -1;
+        margin: 8px 0 0;
+        padding-bottom: 6px;
+        border-bottom: 2px solid var(--turquoise-soft);
+        color: var(--navy-primary);
+        font-size: 0.96rem;
+        font-weight: 750;
+      }
+      .subsection-title:first-child {
+        margin-top: 0;
+      }
       .field-legend-note {
         display: flex;
         flex-wrap: wrap;
@@ -576,10 +588,9 @@
               <div class="dashboard-card">
                 <p class="eyebrow text-success">Selamat datang</p>
                 <h2 class="h4">
-                  Bergabung bersama keluarga besar Ihsanul Amal
+                  Ayo bergabung bersama keluarga besar Ihsanul Amal Alabio
                 </h2>
                 <p class="mb-3">
-                  Informasi penerimaan peserta didik baru di lembaga pendidikan.
                   Siapkan data calon siswa dan orang tua sebelum mengisi
                   formulir.
                 </p>
@@ -608,8 +619,9 @@
                 <div class="card-icon" aria-hidden="true">✓</div>
                 <h2>Persiapkan Dokumen</h2>
                 <p class="mb-0">
-                  Siapkan data NISN, NIK, kartu keluarga, data sekolah asal,
-                  serta informasi kontak orang tua atau wali.
+                  Siapkan berkas Akta Kelahiran, Kartu Keluarga (KK), KIA
+                  (opsional), serta KTP Ayah dan Ibu dalam format PDF/JPG (maks.
+                  2 MB).
                 </p>
               </article>
             </div>
@@ -638,7 +650,8 @@
             <h2>Formulir Pendaftaran siswa</h2>
             <p>
               Isi data sesuai dokumen resmi. Kolom bertanda * wajib diisi;
-              periksa kembali NIK dan nomor kontak sebelum mengirim.
+              pastikan berkas lampiran (Akta, KK, KTP Ayah &amp; Ibu) dan nomor
+              kontak sudah lengkap sebelum mengirim.
             </p>
             <div class="field-legend-note">
               <span
@@ -688,7 +701,6 @@
                       name="programTambahan"
                       type="checkbox"
                       value="TPA"
-                      checked
                     />
                     <span>Include TPA Ihsanul Amal</span>
                   </label>
@@ -700,7 +712,6 @@
                       name="programTambahan"
                       type="checkbox"
                       value="Boarding"
-                      checked
                     />
                     <span>Include Boarding SMPIT Ihsanul Amal</span>
                   </label>
@@ -724,7 +735,7 @@
                   </select>
                 </div>
 
-                <div class="field">
+                <div class="field half">
                   <label for="namaAsalSekolah"
                     >Nama asal sekolah / madrasah
                     <span class="required-badge">* Wajib</span></label
@@ -736,19 +747,6 @@
                     required
                     maxlength="150"
                     data-parsley-required-message="Wajib diisi: Masukkan nama asal sekolah / madrasah."
-                  />
-                </div>
-                <div class="field">
-                  <label for="npsnAsal"
-                    >NPSN / NSM asal
-                    <span class="optional">(opsional)</span></label
-                  >
-                  <input
-                    id="npsnAsal"
-                    name="npsnAsal"
-                    placeholder="Opsional (boleh dikosongkan)"
-                    inputmode="numeric"
-                    maxlength="20"
                   />
                 </div>
               </div>
@@ -772,59 +770,7 @@
                     data-parsley-required-message="Wajib diisi: Masukkan nama lengkap calon siswa."
                   />
                 </div>
-                <div class="field">
-                  <label for="nisn"
-                    >NISN (10 digit)
-                    <span class="required-badge">* Wajib</span></label
-                  >
-                  <input
-                    id="nisn"
-                    name="nisn"
-                    placeholder="Wajib diisi (10 digit angka)"
-                    inputmode="numeric"
-                    pattern="[0-9]{10}"
-                    minlength="10"
-                    maxlength="10"
-                    required
-                    data-parsley-required-message="Wajib diisi: Masukkan 10 digit NISN."
-                    data-parsley-pattern="^[0-9]{10}$"
-                    data-parsley-pattern-message="NISN harus tepat 10 digit angka."
-                  />
-                </div>
-                <div class="field">
-                  <label for="nik"
-                    >NIK (16 digit)
-                    <span class="required-badge">* Wajib</span></label
-                  >
-                  <input
-                    id="nik"
-                    name="nik"
-                    placeholder="Wajib diisi (16 digit angka)"
-                    inputmode="numeric"
-                    pattern="[0-9]{16}"
-                    minlength="16"
-                    maxlength="16"
-                    required
-                    data-parsley-required-message="Wajib diisi: Masukkan 16 digit NIK."
-                    data-parsley-pattern="^[0-9]{16}$"
-                    data-parsley-pattern-message="NIK harus tepat 16 digit angka."
-                  />
-                </div>
-                <div class="field">
-                  <label for="nomorKK"
-                    >Nomor KK <span class="optional">(opsional)</span></label
-                  >
-                  <input
-                    id="nomorKK"
-                    name="nomorKK"
-                    placeholder="Opsional (16 digit angka)"
-                    inputmode="numeric"
-                    pattern="[0-9]{16}"
-                    maxlength="16"
-                    data-parsley-pattern="^[0-9]{16}$"
-                    data-parsley-pattern-message="Nomor KK harus 16 digit angka jika diisi."
-                  />
-                </div>
+
                 <div class="field">
                   <label for="tempatLahir"
                     >Tempat lahir
@@ -839,6 +785,7 @@
                     data-parsley-required-message="Wajib diisi: Masukkan tempat lahir."
                   />
                 </div>
+
                 <div class="field">
                   <label for="tanggalLahir"
                     >Tanggal lahir
@@ -853,6 +800,7 @@
                     data-parsley-required-message="Wajib diisi: Pilih tanggal lahir."
                   />
                 </div>
+
                 <div class="field">
                   <label for="jenisKelamin"
                     >Jenis kelamin
@@ -869,15 +817,10 @@
                     <option value="Perempuan">Perempuan</option>
                   </select>
                 </div>
-              </div>
-            </fieldset>
 
-            <fieldset>
-              <legend>3. Alamat Lengkap dan Data Orang Tua</legend>
-              <div class="fields address-family-fields">
                 <div class="field wide">
                   <label for="jalanRtRw"
-                    >Jalan / RT / RW
+                    >Alamat lengkap <small>(Jalan / RT / RW)</small>
                     <span class="required-badge">* Wajib</span></label
                   >
                   <input
@@ -889,6 +832,7 @@
                     data-parsley-required-message="Wajib diisi: Masukkan alamat jalan / RT / RW."
                   />
                 </div>
+
                 <div class="field">
                   <label for="provinsi"
                     >Provinsi <span class="required-badge">* Wajib</span></label
@@ -902,6 +846,7 @@
                     data-parsley-required-message="Wajib diisi: Masukkan nama provinsi."
                   />
                 </div>
+
                 <div class="field">
                   <label for="kabupatenKota"
                     >Kabupaten / kota
@@ -916,6 +861,7 @@
                     data-parsley-required-message="Wajib diisi: Masukkan kabupaten / kota."
                   />
                 </div>
+
                 <div class="field">
                   <label for="kecamatan"
                     >Kecamatan
@@ -930,6 +876,7 @@
                     data-parsley-required-message="Wajib diisi: Masukkan nama kecamatan."
                   />
                 </div>
+
                 <div class="field">
                   <label for="desaKelurahan"
                     >Desa / kelurahan
@@ -944,23 +891,15 @@
                     data-parsley-required-message="Wajib diisi: Masukkan desa / kelurahan."
                   />
                 </div>
-                <div class="field">
-                  <label for="nikAyah"
-                    >NIK ayah / wali
-                    <span class="optional">(opsional)</span></label
-                  >
-                  <input
-                    id="nikAyah"
-                    name="nikAyah"
-                    placeholder="Opsional (16 digit angka)"
-                    inputmode="numeric"
-                    pattern="[0-9]{16}"
-                    maxlength="16"
-                    data-parsley-pattern="^[0-9]{16}$"
-                    data-parsley-pattern-message="NIK ayah harus 16 digit angka jika diisi."
-                  />
-                </div>
-                <div class="field">
+              </div>
+            </fieldset>
+
+            <fieldset>
+              <legend>3. Data Orang Tua / Wali</legend>
+              <div class="fields address-family-fields">
+                <h3 class="subsection-title">A. Data Ayah Kandung</h3>
+
+                <div class="field contact-half">
                   <label for="namaAyah"
                     >Nama ayah
                     <span class="required-badge">* Wajib</span></label
@@ -971,9 +910,39 @@
                     placeholder="Wajib diisi"
                     required
                     maxlength="150"
-                    data-parsley-required-message="Wajib diisi: Masukkan nama ayah / wali."
+                    data-parsley-required-message="Wajib diisi: Masukkan nama ayah."
                   />
                 </div>
+
+                <div class="field">
+                  <label for="tempatLahirAyah"
+                    >Tempat lahir ayah
+                    <span class="required-badge">* Wajib</span></label
+                  >
+                  <input
+                    id="tempatLahirAyah"
+                    name="tempatLahirAyah"
+                    placeholder="Wajib diisi"
+                    required
+                    maxlength="100"
+                    data-parsley-required-message="Wajib diisi: Masukkan tempat lahir ayah."
+                  />
+                </div>
+
+                <div class="field">
+                  <label for="tanggalLahirAyah"
+                    >Tanggal lahir ayah
+                    <span class="required-badge">* Wajib</span></label
+                  >
+                  <input
+                    id="tanggalLahirAyah"
+                    name="tanggalLahirAyah"
+                    type="date"
+                    required
+                    data-parsley-required-message="Wajib diisi: Pilih tanggal lahir ayah."
+                  />
+                </div>
+
                 <div class="field">
                   <label for="pendidikanAyah"
                     >Pendidikan ayah
@@ -999,6 +968,7 @@
                     <option>Lainnya</option>
                   </select>
                 </div>
+
                 <div class="field">
                   <label for="pekerjaanAyah"
                     >Pekerjaan ayah
@@ -1024,22 +994,61 @@
                     <option value="Tidak Bekerja">Tidak Bekerja</option>
                   </select>
                 </div>
+
                 <div class="field">
-                  <label for="nikIbu"
-                    >NIK ibu <span class="optional">(opsional)</span></label
+                  <label for="noHpAyah"
+                    >No. HP / WA ayah
+                    <span class="required-badge">* Wajib</span></label
                   >
                   <input
-                    id="nikIbu"
-                    name="nikIbu"
-                    placeholder="Opsional (16 digit angka)"
-                    inputmode="numeric"
-                    pattern="[0-9]{16}"
-                    maxlength="16"
-                    data-parsley-pattern="^[0-9]{16}$"
-                    data-parsley-pattern-message="NIK ibu harus 16 digit angka jika diisi."
+                    id="noHpAyah"
+                    name="noHpAyah"
+                    placeholder="Wajib diisi (0812xxxxxxxx)"
+                    type="tel"
+                    inputmode="tel"
+                    autocomplete="tel"
+                    required
+                    maxlength="20"
+                    data-parsley-required-message="Wajib diisi: Masukkan nomor HP / WA ayah."
                   />
                 </div>
+
                 <div class="field">
+                  <label for="penghasilanAyah"
+                    >Penghasilan ayah / bulan
+                    <span class="required-badge">* Wajib</span></label
+                  >
+                  <select
+                    id="penghasilanAyah"
+                    name="penghasilanAyah"
+                    required
+                    data-parsley-required-message="Wajib dipilih: Pilih penghasilan ayah."
+                  >
+                    <option value="">-- Wajib diisi: Pilih Rentang --</option>
+                    <option value="Tidak Berpenghasilan">
+                      Tidak Berpenghasilan
+                    </option>
+                    <option value="Kurang dari Rp 1 Juta">
+                      Kurang dari Rp 1.000.000
+                    </option>
+                    <option value="Rp 1 Juta - Rp 3 Juta">
+                      Rp 1.000.000 - Rp 3.000.000
+                    </option>
+                    <option value="Rp 3 Juta - Rp 5 Juta">
+                      Rp 3.000.000 - Rp 5.000.000
+                    </option>
+                    <option value="Rp 5 Juta - Rp 10 Juta">
+                      Rp 5.000.000 - Rp 10.000.000
+                    </option>
+                    <option value="Lebih dari Rp 10 Juta">
+                      Lebih dari Rp 10.000.000
+                    </option>
+                  </select>
+                </div>
+
+                <h3 class="subsection-title">B. Data Ibu Kandung</h3>
+
+                <div class="field contact-half">
                   <label for="namaIbu"
                     >Nama ibu <span class="required-badge">* Wajib</span></label
                   >
@@ -1052,6 +1061,36 @@
                     data-parsley-required-message="Wajib diisi: Masukkan nama ibu."
                   />
                 </div>
+
+                <div class="field">
+                  <label for="tempatLahirIbu"
+                    >Tempat lahir ibu
+                    <span class="required-badge">* Wajib</span></label
+                  >
+                  <input
+                    id="tempatLahirIbu"
+                    name="tempatLahirIbu"
+                    placeholder="Wajib diisi"
+                    required
+                    maxlength="100"
+                    data-parsley-required-message="Wajib diisi: Masukkan tempat lahir ibu."
+                  />
+                </div>
+
+                <div class="field">
+                  <label for="tanggalLahirIbu"
+                    >Tanggal lahir ibu
+                    <span class="required-badge">* Wajib</span></label
+                  >
+                  <input
+                    id="tanggalLahirIbu"
+                    name="tanggalLahirIbu"
+                    type="date"
+                    required
+                    data-parsley-required-message="Wajib diisi: Pilih tanggal lahir ibu."
+                  />
+                </div>
+
                 <div class="field">
                   <label for="pendidikanIbu"
                     >Pendidikan ibu
@@ -1077,6 +1116,7 @@
                     <option>Lainnya</option>
                   </select>
                 </div>
+
                 <div class="field">
                   <label for="pekerjaanIbu"
                     >Pekerjaan ibu
@@ -1102,35 +1142,40 @@
                     <option value="Tidak Bekerja">Tidak Bekerja</option>
                   </select>
                 </div>
-                <div class="field contact-half">
-                  <label for="noHp"
-                    >No. HP / WA aktif
+
+                <div class="field">
+                  <label for="noHpIbu"
+                    >No. HP / WA ibu
                     <span class="required-badge">* Wajib</span></label
                   >
                   <input
-                    id="noHp"
-                    name="noHp"
-                    placeholder="Wajib diisi (contoh: 0812xxxxxxxx)"
+                    id="noHpIbu"
+                    name="noHpIbu"
+                    placeholder="Wajib diisi (0812xxxxxxxx)"
                     type="tel"
                     inputmode="tel"
                     autocomplete="tel"
                     required
                     maxlength="20"
-                    data-parsley-required-message="Wajib diisi: Masukkan nomor HP / WhatsApp aktif."
+                    data-parsley-required-message="Wajib diisi: Masukkan nomor HP / WA ibu."
                   />
                 </div>
-                <div class="field contact-half">
-                  <label for="penghasilanOrtu"
-                    >Penghasilan orang tua / bulan
+
+                <div class="field">
+                  <label for="penghasilanIbu"
+                    >Penghasilan ibu / bulan
                     <span class="required-badge">* Wajib</span></label
                   >
                   <select
-                    id="penghasilanOrtu"
-                    name="penghasilanOrtu"
+                    id="penghasilanIbu"
+                    name="penghasilanIbu"
                     required
-                    data-parsley-required-message="Wajib dipilih: Pilih rentang penghasilan orang tua."
+                    data-parsley-required-message="Wajib dipilih: Pilih penghasilan ibu."
                   >
                     <option value="">-- Wajib diisi: Pilih Rentang --</option>
+                    <option value="Tidak Berpenghasilan">
+                      Tidak Berpenghasilan
+                    </option>
                     <option value="Kurang dari Rp 1 Juta">
                       Kurang dari Rp 1.000.000
                     </option>
@@ -1147,6 +1192,130 @@
                       Lebih dari Rp 10.000.000
                     </option>
                   </select>
+                </div>
+
+                <h3 class="subsection-title">
+                  C. Data Wali <span class="optional">(opsional)</span>
+                </h3>
+
+                <div class="field contact-half">
+                  <label for="namaWali"
+                    >Nama wali <span class="optional">(opsional)</span></label
+                  >
+                  <input
+                    id="namaWali"
+                    name="namaWali"
+                    placeholder="Opsional (boleh dikosongkan)"
+                    maxlength="150"
+                  />
+                </div>
+
+                <div class="field contact-half">
+                  <label for="noHpWali"
+                    >No. HP / WA wali
+                    <span class="optional">(opsional)</span></label
+                  >
+                  <input
+                    id="noHpWali"
+                    name="noHpWali"
+                    placeholder="Opsional (boleh dikosongkan)"
+                    type="tel"
+                    inputmode="tel"
+                    maxlength="20"
+                  />
+                </div>
+              </div>
+            </fieldset>
+
+            <fieldset>
+              <legend>4. Lampiran Berkas PDF atau JPG</legend>
+              <div class="fields">
+                <div class="field wide">
+                  <p class="hint mb-1">
+                    Unggah berkas lampiran di bawah ini dalam format
+                    <strong>PDF, JPG, atau PNG</strong> (ukuran maksimal
+                    <strong>2 MB</strong> per berkas).
+                  </p>
+                </div>
+                <div class="field">
+                  <label for="fileAkta"
+                    >1. Upload Akta Kelahiran
+                    <span class="required-badge">* Wajib</span></label
+                  >
+                  <input
+                    id="fileAkta"
+                    type="file"
+                    accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png"
+                    required
+                    data-parsley-required-message="Wajib diisi: Unggah berkas Akta Kelahiran."
+                    data-parsley-fileextension="pdf,jpg,jpeg,png"
+                    data-parsley-maxfilesize="2"
+                  />
+                  <p class="hint">Format: PDF / JPG / PNG (Maks. 2 MB)</p>
+                </div>
+                <div class="field">
+                  <label for="fileKK"
+                    >2. Kartu Keluarga (KK)
+                    <span class="required-badge">* Wajib</span></label
+                  >
+                  <input
+                    id="fileKK"
+                    type="file"
+                    accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png"
+                    required
+                    data-parsley-required-message="Wajib diisi: Unggah berkas Kartu Keluarga (KK)."
+                    data-parsley-fileextension="pdf,jpg,jpeg,png"
+                    data-parsley-maxfilesize="2"
+                  />
+                  <p class="hint">Format: PDF / JPG / PNG (Maks. 2 MB)</p>
+                </div>
+                <div class="field">
+                  <label for="fileKIA"
+                    >3. Kartu Identitas Anak (KIA)
+                    <span class="optional">(opsional)</span></label
+                  >
+                  <input
+                    id="fileKIA"
+                    type="file"
+                    accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png"
+                    data-parsley-fileextension="pdf,jpg,jpeg,png"
+                    data-parsley-maxfilesize="2"
+                  />
+                  <p class="hint">
+                    Opsional — Format: PDF / JPG / PNG (Maks. 2 MB)
+                  </p>
+                </div>
+                <div class="field">
+                  <label for="fileKtpAyah"
+                    >4. KTP Ayah
+                    <span class="required-badge">* Wajib</span></label
+                  >
+                  <input
+                    id="fileKtpAyah"
+                    type="file"
+                    accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png"
+                    required
+                    data-parsley-required-message="Wajib diisi: Unggah berkas KTP Ayah."
+                    data-parsley-fileextension="pdf,jpg,jpeg,png"
+                    data-parsley-maxfilesize="2"
+                  />
+                  <p class="hint">Format: PDF / JPG / PNG (Maks. 2 MB)</p>
+                </div>
+                <div class="field">
+                  <label for="fileKtpIbu"
+                    >5. KTP Ibu
+                    <span class="required-badge">* Wajib</span></label
+                  >
+                  <input
+                    id="fileKtpIbu"
+                    type="file"
+                    accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png"
+                    required
+                    data-parsley-required-message="Wajib diisi: Unggah berkas KTP Ibu."
+                    data-parsley-fileextension="pdf,jpg,jpeg,png"
+                    data-parsley-maxfilesize="2"
+                  />
+                  <p class="hint">Format: PDF / JPG / PNG (Maks. 2 MB)</p>
                 </div>
               </div>
             </fieldset>
@@ -1255,6 +1424,35 @@
           check: "Pilih antara %s dan %s pilihan.",
           equalto: "Isian harus sama.",
         });
+        window.Parsley.addValidator("maxfilesize", {
+          validateString: function (_value, maxSizeMb, parsleyInstance) {
+            const files = parsleyInstance.$element[0].files;
+            if (!files || files.length === 0) return true;
+            return files[0].size <= maxSizeMb * 1024 * 1024;
+          },
+          requirementType: "integer",
+          messages: {
+            id: "Ukuran berkas terlalu besar. Maksimal %s MB.",
+          },
+        });
+
+        window.Parsley.addValidator("fileextension", {
+          validateString: function (value, requirement, parsleyInstance) {
+            const files = parsleyInstance.$element[0].files;
+            if (!files || files.length === 0) return true;
+            const fileName = files[0].name || value || "";
+            const ext = fileName.split(".").pop().toLowerCase();
+            const allowed = requirement
+              .split(",")
+              .map((item) => item.trim().toLowerCase());
+            return allowed.includes(ext);
+          },
+          requirementType: "string",
+          messages: {
+            id: "Format berkas harus berupa PDF, JPG, atau PNG.",
+          },
+        });
+
         window.Parsley.setLocale("id");
       }
 
@@ -1278,7 +1476,10 @@
           if (!isValid) {
             const firstError = formElement.querySelector(".parsley-error");
             if (firstError) {
-              firstError.scrollIntoView({ behavior: "smooth", block: "center" });
+              firstError.scrollIntoView({
+                behavior: "smooth",
+                block: "center",
+              });
               firstError.focus({ preventScroll: true });
             }
           }
@@ -1378,7 +1579,9 @@
         additionalProgramOptions.forEach(({ container, checkbox, units }) => {
           const isAvailable = units.includes(unitSekolah.value);
           container.hidden = !isAvailable;
-          checkbox.checked = isAvailable;
+          if (!isAvailable) {
+            checkbox.checked = false;
+          }
         });
       }
 
@@ -1538,6 +1741,75 @@
         return submitViaIframe(payload);
       }
 
+      const ATTACHMENT_INPUTS = [
+        {
+          key: "akta",
+          id: "fileAkta",
+          label: "Akta Kelahiran",
+          required: true,
+        },
+        {
+          key: "kk",
+          id: "fileKK",
+          label: "Kartu Keluarga (KK)",
+          required: true,
+        },
+        {
+          key: "kia",
+          id: "fileKIA",
+          label: "Kartu Identitas Anak (KIA)",
+          required: false,
+        },
+        {
+          key: "ktpAyah",
+          id: "fileKtpAyah",
+          label: "KTP Ayah",
+          required: true,
+        },
+        { key: "ktpIbu", id: "fileKtpIbu", label: "KTP Ibu", required: true },
+      ];
+
+      function readFileAsBase64(file) {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => {
+            const resultStr = String(reader.result || "");
+            const base64 = resultStr.includes(",")
+              ? resultStr.split(",")[1]
+              : resultStr;
+            resolve({
+              name: file.name,
+              mimeType: file.type || "",
+              base64,
+            });
+          };
+          reader.onerror = () =>
+            reject(new Error(`Gagal membaca berkas ${file.name}.`));
+          reader.readAsDataURL(file);
+        });
+      }
+
+      async function collectAttachmentsPayload() {
+        const attachments = {};
+        for (const item of ATTACHMENT_INPUTS) {
+          const inputEl = document.getElementById(item.id);
+          const file = inputEl?.files?.[0];
+          if (!file) {
+            if (item.required) {
+              throw new Error(`Berkas ${item.label} wajib diunggah.`);
+            }
+            continue;
+          }
+          if (file.size > 2 * 1024 * 1024) {
+            throw new Error(
+              `Ukuran berkas ${item.label} melebihi batas maksimal 2 MB.`,
+            );
+          }
+          attachments[item.key] = await readFileAsBase64(file);
+        }
+        return JSON.stringify(attachments);
+      }
+
       form.addEventListener("submit", async (event) => {
         event.preventDefault();
         if (!validateWithParsley(form, registrationParsley)) return;
@@ -1550,16 +1822,21 @@
           "";
         submissionId = submissionId || createSubmissionId();
         payload.requestId = submissionId;
-        setButtonLoading(submitButton, true, "Menyimpan Pendaftaran...");
+        setButtonLoading(
+          submitButton,
+          true,
+          "Mengunggah Berkas & Menyimpan...",
+        );
         result.dataset.state = "info";
         result.textContent =
-          "Sedang mengirim dan menyimpan data pendaftaran ke server PPDB...";
+          "Sedang mengunggah 5 berkas lampiran dan menyimpan pendaftaran ke server PPDB...";
         showLoadingModal(
-          "Memproses Pendaftaran",
-          "Mohon tunggu sebentar, data calon siswa sedang disimpan ke server PPDB...",
+          "Memproses Pendaftaran & Berkas",
+          "Mohon tunggu sebentar, berkas lampiran sedang diunggah ke Google Drive dan data disimpan ke server PPDB...",
         );
 
         try {
+          payload.attachments = await collectAttachmentsPayload();
           const response = await submitToAppsScript(payload);
           if (response?.result !== "success") {
             throw new Error(
