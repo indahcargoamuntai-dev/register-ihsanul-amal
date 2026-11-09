@@ -731,11 +731,12 @@
                     <option value="">-- Wajib diisi: Pilih status --</option>
                     <option>Internal Ihsanul Amal</option>
                     <option>TK Islam Terpadu Nurul Ilmi</option>
+                    <option>Belum sekolah</option>
                     <option>Lainnya</option>
                   </select>
                 </div>
 
-                <div class="field half">
+                <div class="field" id="namaAsalSekolahContainer">
                   <label for="namaAsalSekolah"
                     >Nama asal sekolah / madrasah
                     <span class="required-badge">* Wajib</span></label
@@ -819,76 +820,17 @@
                 </div>
 
                 <div class="field wide">
-                  <label for="jalanRtRw"
-                    >Alamat lengkap <small>(Jalan / RT / RW)</small>
+                  <label for="alamat"
+                    >Alamat lengkap
                     <span class="required-badge">* Wajib</span></label
                   >
                   <input
-                    id="jalanRtRw"
-                    name="jalanRtRw"
-                    placeholder="Wajib diisi (nama jalan, RT/RW)"
+                    id="alamat"
+                    name="alamat"
+                    placeholder="Wajib diisi (nama jalan, RT/RW, desa/kelurahan, kecamatan, kab/kota)"
                     required
-                    maxlength="250"
-                    data-parsley-required-message="Wajib diisi: Masukkan alamat jalan / RT / RW."
-                  />
-                </div>
-
-                <div class="field">
-                  <label for="provinsi"
-                    >Provinsi <span class="required-badge">* Wajib</span></label
-                  >
-                  <input
-                    id="provinsi"
-                    name="provinsi"
-                    placeholder="Wajib diisi"
-                    required
-                    maxlength="100"
-                    data-parsley-required-message="Wajib diisi: Masukkan nama provinsi."
-                  />
-                </div>
-
-                <div class="field">
-                  <label for="kabupatenKota"
-                    >Kabupaten / kota
-                    <span class="required-badge">* Wajib</span></label
-                  >
-                  <input
-                    id="kabupatenKota"
-                    name="kabupatenKota"
-                    placeholder="Wajib diisi"
-                    required
-                    maxlength="100"
-                    data-parsley-required-message="Wajib diisi: Masukkan kabupaten / kota."
-                  />
-                </div>
-
-                <div class="field">
-                  <label for="kecamatan"
-                    >Kecamatan
-                    <span class="required-badge">* Wajib</span></label
-                  >
-                  <input
-                    id="kecamatan"
-                    name="kecamatan"
-                    placeholder="Wajib diisi"
-                    required
-                    maxlength="100"
-                    data-parsley-required-message="Wajib diisi: Masukkan nama kecamatan."
-                  />
-                </div>
-
-                <div class="field">
-                  <label for="desaKelurahan"
-                    >Desa / kelurahan
-                    <span class="required-badge">* Wajib</span></label
-                  >
-                  <input
-                    id="desaKelurahan"
-                    name="desaKelurahan"
-                    placeholder="Wajib diisi"
-                    required
-                    maxlength="100"
-                    data-parsley-required-message="Wajib diisi: Masukkan desa / kelurahan."
+                    maxlength="300"
+                    data-parsley-required-message="Wajib diisi: Masukkan alamat lengkap."
                   />
                 </div>
               </div>
@@ -1536,6 +1478,9 @@
       const unitSekolah = document.getElementById("unitSekolah");
       const statusAsalSekolah = document.getElementById("statusAsalSekolah");
       const namaAsalSekolah = document.getElementById("namaAsalSekolah");
+      const namaAsalSekolahContainer = document.getElementById(
+        "namaAsalSekolahContainer",
+      );
       let submissionId = null;
       const additionalProgramOptions = [
         {
@@ -1589,15 +1534,33 @@
         const unit = unitSekolah.value;
 
         if (unit === "KB" && triggerSource === "unit") {
-          statusAsalSekolah.value = "Lainnya";
+          statusAsalSekolah.value = "Belum sekolah";
         }
 
         const status = statusAsalSekolah.value;
+        const isBelumSekolah = status === "Belum sekolah";
+
+        if (namaAsalSekolahContainer) {
+          namaAsalSekolahContainer.hidden = isBelumSekolah;
+        }
+
+        if (isBelumSekolah) {
+          namaAsalSekolah.value = "-";
+          namaAsalSekolah.removeAttribute("required");
+          if (window.jQuery && window.jQuery.fn && window.jQuery.fn.parsley) {
+            window.jQuery(namaAsalSekolah).parsley().reset();
+          }
+          if (statusAsalSekolah.value && window.jQuery && window.jQuery.fn && window.jQuery.fn.parsley) {
+            window.jQuery(statusAsalSekolah).parsley().validate();
+          }
+          return;
+        }
+
+        namaAsalSekolah.setAttribute("required", "");
+
         let suggestedName = null;
 
-        if (unit === "KB") {
-          suggestedName = "belum sekolah";
-        } else if (
+        if (
           AUTO_SCHOOL_NAME_MAP[unit] &&
           AUTO_SCHOOL_NAME_MAP[unit][status]
         ) {

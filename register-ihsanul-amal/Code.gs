@@ -20,11 +20,7 @@ var HEADERS = [
   'tempatLahir',
   'tanggalLahir',
   'jenisKelamin',
-  'jalanRtRw',
-  'provinsi',
-  'kabupatenKota',
-  'kecamatan',
-  'desaKelurahan',
+  'Alamat',
   'Data-Ayah',
   'Data-Ibu',
   'Data-Wali',
@@ -115,6 +111,8 @@ function doPost(e) {
     var noHpWali = String(data.noHpWali || '').trim();
     var dataWaliArray = (namaWali || noHpWali) ? [namaWali, noHpWali] : [];
 
+    var alamat = String(data.alamat || data.jalanRtRw || '').trim();
+
     stage = 'menyimpan data pendaftaran ke spreadsheet';
     sheet.appendRow([
       new Date(),
@@ -127,11 +125,7 @@ function doPost(e) {
       data.tempatLahir,
       data.tanggalLahir,
       data.jenisKelamin,
-      data.jalanRtRw,
-      data.provinsi,
-      data.kabupatenKota,
-      data.kecamatan,
-      data.desaKelurahan,
+      alamat,
       JSON.stringify(dataAyahArray),
       JSON.stringify(dataIbuArray),
       dataWaliArray.length ? JSON.stringify(dataWaliArray) : '',
@@ -191,9 +185,8 @@ function validateRegistration_(data) {
   }
 
   var requiredFields = [
-    'jenjang', 'statusAsalSekolah', 'namaAsalSekolah', 'namaLengkap',
+    'jenjang', 'statusAsalSekolah', 'namaLengkap',
     'tempatLahir', 'tanggalLahir', 'jenisKelamin',
-    'jalanRtRw', 'provinsi', 'kabupatenKota', 'kecamatan', 'desaKelurahan',
     'namaAyah', 'tempatLahirAyah', 'tanggalLahirAyah', 'pendidikanAyah', 'pekerjaanAyah', 'noHpAyah', 'penghasilanAyah',
     'namaIbu', 'tempatLahirIbu', 'tanggalLahirIbu', 'pendidikanIbu', 'pekerjaanIbu', 'noHpIbu', 'penghasilanIbu'
   ];
@@ -203,6 +196,17 @@ function validateRegistration_(data) {
       throw registrationError_('MISSING_FIELD', 'Field wajib belum diisi: ' + field);
     }
   });
+
+  var alamat = String(data.alamat || data.jalanRtRw || '').trim();
+  if (!alamat) {
+    throw registrationError_('MISSING_FIELD', 'Field wajib belum diisi: Alamat');
+  }
+
+  if (String(data.statusAsalSekolah).trim().toLowerCase() === 'belum sekolah') {
+    data.namaAsalSekolah = data.namaAsalSekolah && String(data.namaAsalSekolah).trim() ? data.namaAsalSekolah : '-';
+  } else if (!data.namaAsalSekolah || !String(data.namaAsalSekolah).trim()) {
+    throw registrationError_('MISSING_FIELD', 'Field wajib belum diisi: namaAsalSekolah');
+  }
 
   if (['KB', 'TK', 'SD', 'SMP'].indexOf(data.jenjang) === -1) {
     throw registrationError_('INVALID_SCHOOL_LEVEL', 'Jenjang sekolah tidak valid. Pilih KB, TK, SD, atau SMP.');
@@ -382,7 +386,7 @@ function ensureHeaders_(sheet) {
       ') pada tab "' + sheet.getName() + '" tidak cocok. Seharusnya "' +
       HEADERS[mismatchIndex] + '", tetapi ditemukan "' +
       String(currentHeaders[mismatchIndex]).trim() +
-      '". Pastikan 19 header berada di baris pertama dan urutannya sesuai.'
+      '". Pastikan 15 header berada di baris pertama dan urutannya sesuai.'
     );
   }
 }
