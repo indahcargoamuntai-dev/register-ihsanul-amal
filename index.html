@@ -620,7 +620,7 @@
                 <h2>Persiapkan Dokumen</h2>
                 <p class="mb-0">
                   Siapkan berkas Akta Kelahiran, Kartu Keluarga (KK), KIA
-                  (opsional), KTP Ibu, dan KTP Ayah (opsional) dalam format
+                  (opsional), KTP Ibu (opsional), dan KTP Ayah (opsional) dalam format
                   PDF/JPG (maks. 2 MB).
                 </p>
               </article>
@@ -650,8 +650,8 @@
             <h2>Formulir Pendaftaran siswa</h2>
             <p>
               Isi data sesuai dokumen resmi. Kolom bertanda * wajib diisi;
-              pastikan berkas lampiran wajib (Akta, KK, dan KTP Ibu) serta
-              nomor kontak sudah lengkap sebelum mengirim. KTP Ayah opsional.
+              pastikan berkas lampiran wajib (Akta dan KK) serta nomor kontak
+              sudah lengkap sebelum mengirim. KIA, KTP Ibu, dan KTP Ayah opsional.
             </p>
             <div class="field-legend-note">
               <span
@@ -1245,19 +1245,18 @@
                 </div>
                 <div class="field">
                   <label for="fileKtpIbu"
-                    >5. KTP Ibu
-                    <span class="required-badge">* Wajib</span></label
+                    >5. KTP Ibu</label
                   >
                   <input
                     id="fileKtpIbu"
                     type="file"
                     accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png"
-                    required
-                    data-parsley-required-message="Wajib diisi: Unggah berkas KTP Ibu."
                     data-parsley-fileextension="pdf,jpg,jpeg,png"
                     data-parsley-maxfilesize="2"
                   />
-                  <p class="hint">Format: PDF / JPG / PNG (Maks. 2 MB)</p>
+                  <p class="hint">
+                    Opsional — Format: PDF / JPG / PNG (Maks. 2 MB)
+                  </p>
                 </div>
               </div>
             </fieldset>
@@ -1729,7 +1728,7 @@
           label: "KTP Ayah",
           required: false,
         },
-        { key: "ktpIbu", id: "fileKtpIbu", label: "KTP Ibu", required: true },
+        { key: "ktpIbu", id: "fileKtpIbu", label: "KTP Ibu", required: false },
       ];
 
       function readFileAsBase64(file) {
