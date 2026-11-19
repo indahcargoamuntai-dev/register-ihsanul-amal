@@ -620,8 +620,8 @@
                 <h2>Persiapkan Dokumen</h2>
                 <p class="mb-0">
                   Siapkan berkas Akta Kelahiran, Kartu Keluarga (KK), KIA
-                  (opsional), serta KTP Ayah dan Ibu dalam format PDF/JPG (maks.
-                  2 MB).
+                  (opsional), KTP Ibu, dan KTP Ayah (opsional) dalam format
+                  PDF/JPG (maks. 2 MB).
                 </p>
               </article>
             </div>
@@ -650,8 +650,8 @@
             <h2>Formulir Pendaftaran siswa</h2>
             <p>
               Isi data sesuai dokumen resmi. Kolom bertanda * wajib diisi;
-              pastikan berkas lampiran (Akta, KK, KTP Ayah &amp; Ibu) dan nomor
-              kontak sudah lengkap sebelum mengirim.
+              pastikan berkas lampiran wajib (Akta, KK, dan KTP Ibu) serta
+              nomor kontak sudah lengkap sebelum mengirim. KTP Ayah opsional.
             </p>
             <div class="field-legend-note">
               <span
@@ -1230,18 +1230,18 @@
                 <div class="field">
                   <label for="fileKtpAyah"
                     >4. KTP Ayah
-                    <span class="required-badge">* Wajib</span></label
+                    <span class="optional">(opsional)</span></label
                   >
                   <input
                     id="fileKtpAyah"
                     type="file"
                     accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png"
-                    required
-                    data-parsley-required-message="Wajib diisi: Unggah berkas KTP Ayah."
                     data-parsley-fileextension="pdf,jpg,jpeg,png"
                     data-parsley-maxfilesize="2"
                   />
-                  <p class="hint">Format: PDF / JPG / PNG (Maks. 2 MB)</p>
+                  <p class="hint">
+                    Opsional — Format: PDF / JPG / PNG (Maks. 2 MB)
+                  </p>
                 </div>
                 <div class="field">
                   <label for="fileKtpIbu"
@@ -1727,7 +1727,7 @@
           key: "ktpAyah",
           id: "fileKtpAyah",
           label: "KTP Ayah",
-          required: true,
+          required: false,
         },
         { key: "ktpIbu", id: "fileKtpIbu", label: "KTP Ibu", required: true },
       ];
@@ -1792,7 +1792,7 @@
         );
         result.dataset.state = "info";
         result.textContent =
-          "Sedang mengunggah 5 berkas lampiran dan menyimpan pendaftaran ke server PPDB...";
+          "Sedang mengunggah berkas yang dipilih dan menyimpan pendaftaran ke server PPDB...";
         showLoadingModal(
           "Memproses Pendaftaran & Berkas",
           "Mohon tunggu sebentar, berkas lampiran sedang diunggah ke Google Drive dan data disimpan ke server PPDB...",

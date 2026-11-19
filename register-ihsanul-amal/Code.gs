@@ -5,7 +5,7 @@ var ATTACHMENT_SPECS = [
   { key: 'akta', label: 'Akta Kelahiran', suffix: 'Akta', required: true },
   { key: 'kk', label: 'Kartu Keluarga (KK)', suffix: 'KK', required: true },
   { key: 'kia', label: 'Kartu Identitas Anak (KIA)', suffix: 'KIA', required: false },
-  { key: 'ktpAyah', label: 'KTP Ayah', suffix: 'KTP_Ayah', required: true },
+  { key: 'ktpAyah', label: 'KTP Ayah', suffix: 'KTP_Ayah', required: false },
   { key: 'ktpIbu', label: 'KTP Ibu', suffix: 'KTP_Ibu', required: true }
 ];
 
@@ -242,7 +242,7 @@ function validateAttachments_(rawAttachments) {
   }
 
   if (!attachments || typeof attachments !== 'object') {
-    throw registrationError_('MISSING_ATTACHMENTS', 'Berkas lampiran wajib (Akta, KK, KTP Ayah, KTP Ibu) belum diunggah.');
+    throw registrationError_('MISSING_ATTACHMENTS', 'Berkas lampiran wajib (Akta, KK, KTP Ibu) belum diunggah.');
   }
 
   var allowedMimeTypes = {
